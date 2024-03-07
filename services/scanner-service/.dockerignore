@@ -1,0 +1,6 @@
+*.iml
+Dockerfile
+venv
+.idea
+.DS_store
+.vscode
