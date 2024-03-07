@@ -91,7 +91,7 @@
             </Button>
         </div>
     </div>
-    <div class="hidden md:flex bg-card h-52 lg:h-64 rounded">
+    <div class="hidden md:flex bg-background h-52 lg:h-64 rounded-lg aspect-video overflow-hidden">
         <Youtube id="Ay0oet5PJG8" animations={false}/>
     </div>
 </div>

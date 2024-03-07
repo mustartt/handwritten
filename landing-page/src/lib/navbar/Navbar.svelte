@@ -5,7 +5,7 @@
     import * as Sheet from "$lib/components/ui/sheet";
     import * as Accordion from "$lib/components/ui/accordion";
 </script>
-<nav class="flex flex-row fixed w-full h-16 bg-gradient-to-b from-background/50 from-10% to-transparent justify-center items-center px-6">
+<nav class="flex flex-row fixed z-10 w-full h-16 bg-gradient-to-b from-background/50 from-10% to-transparent justify-center items-center px-6">
     <div class="flex flex-row w-full justify-between items-center max-w-2xl lg:max-w-4xl 2xl:max-w-7xl">
         <h1 class="font-bold text-xl">
             Handwritten
