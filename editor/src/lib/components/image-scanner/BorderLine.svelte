@@ -11,8 +11,6 @@
     export let pos4: Position;
 
     function convertToRelativePosition(position: Position) {
-        // const relativeX = width / 2 + position.x;
-        // const relativeY = height / 2 + position.y;
         return {
             x: position.x + 28,
             y: position.y + 28

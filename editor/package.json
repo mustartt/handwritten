@@ -36,6 +36,7 @@
     "svelte-youtube-embed": "^0.2.3",
     "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.2.0",
-    "vaul-svelte": "^0.2.4"
+    "vaul-svelte": "^0.2.4",
+    "zod": "^3.22.4"
   }
 }

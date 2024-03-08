@@ -19,7 +19,7 @@
 
     export let position: Position;
     const padding = 12;
-    const offset = 28;
+    const offset = 24;
 
     $: position = {
         x: clamp(position.x, padding - offset, width - padding - offset),
