@@ -51,10 +51,9 @@
             Login
         </Button>
         <div class="relative hidden lg:flex h-full flex-col bg-muted p-10 text-white dark:border-r">
-            <div
-                    class="absolute inset-0 bg-cover bg-center"
-                    style={`background-image: url(${bgImage});`}
-            />
+            <div class="absolute inset-0 bg-cover bg-center"
+                 style={`background-image: url(${bgImage});`}>
+            </div>
             <div class="relative z-20 flex items-center">
                 <HeaderIcon/>
             </div>

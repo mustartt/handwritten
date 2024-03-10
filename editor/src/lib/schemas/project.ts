@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {Timestamp} from 'firebase/firestore';
 
 const itemOutputSchema = z.object({
     extractedText: z.string()
@@ -43,17 +44,17 @@ const pdfPageItemSchema = baseItemSchema.extend({
 export const itemSchema = z.union([imageItemSchema, pdfPageItemSchema]);
 export type Item = z.infer<typeof itemSchema>;
 
-const notebookDefaultCover = 'https://images.unsplash.com/photo-1550895030-823330fc2551?q=80&w=1024&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 export const projectSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
     owner: z.string(),
-    timeCreated: z.date(),
-    timeUpdated: z.date(),
-    coverImage: z.string().default(notebookDefaultCover),
+    timeCreated: z.custom<Timestamp>(),
+    timeUpdated: z.custom<Timestamp>(),
+    coverImage: z.string().optional(),
     items: z.array(z.object({
         name: z.string(),
         itemId: z.string().uuid()
     }))
 });
 export type Project = z.infer<typeof projectSchema>;
+export type ProjectPreview = Omit<Project, 'items'>;

@@ -1,6 +1,6 @@
 import {initializeApp} from "firebase/app";
 import {getAnalytics, type Analytics} from "firebase/analytics";
-import {connectAuthEmulator, getAuth, type Auth} from 'firebase/auth';
+import {connectAuthEmulator, getAuth, type Auth, type User, onAuthStateChanged, type Unsubscribe} from 'firebase/auth';
 import type {FirebaseApp} from 'firebase/app';
 import {connectStorageEmulator, getStorage, type FirebaseStorage} from 'firebase/storage';
 import {connectFirestoreEmulator, getFirestore, type Firestore} from 'firebase/firestore';
@@ -25,6 +25,7 @@ export let firestore: Firestore;
 export let storage: FirebaseStorage;
 export let functions: Functions;
 
+
 export function initializeFirebase() {
     if (!browser) {
         throw new Error("Can't use the Firebase client on the server.");
@@ -44,4 +45,17 @@ export function initializeFirebase() {
             connectFunctionsEmulator(functions, "127.0.0.1", 5001);
         }
     }
+}
+
+export async function getCurrentUser() {
+    let unsub: Unsubscribe;
+    const result = await new Promise((resolve) => {
+        unsub = onAuthStateChanged(auth, (user) => {
+            resolve(user);
+        })
+    });
+    if (unsub!) {
+        unsub();
+    }
+    return result as User | null;
 }

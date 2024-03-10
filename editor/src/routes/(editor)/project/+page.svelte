@@ -1,12 +1,16 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import HomeSidebar from "$lib/layout/HomeSidebar.svelte";
-    import {AspectRatio} from "$lib/components/ui/aspect-ratio";
-    import testNotebookIcon from '$lib/images/notebook.jpg';
+    import NewProjectIcon from "./components/NewProjectIcon.svelte";
     import DocumentIcon from "./components/DocumentIcon.svelte";
+    import {loadProjects, projectPreview} from "$lib/store/project";
+    import {Loader2Icon} from "lucide-svelte";
 
-    onMount(() => {
+    onMount(async () => {
+        await loadProjects();
     });
+
+    const {loading, previews} = projectPreview;
 </script>
 
 <svelte:head>
@@ -19,33 +23,20 @@
     <div class="container flex justify-between">
         <h2 class="text-2xl font-bold ml-6">Documents</h2>
     </div>
-    <div class="container flex justify-center sm:justify-start items-center flex-wrap mt-2 overflow-y-auto">
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
-        <DocumentIcon/>
+    <div class="container flex justify-center sm:justify-start flex-wrap mt-2 overflow-y-auto">
+        <NewProjectIcon/>
+        {#each $previews as project (project.id)}
+            <DocumentIcon preview={project}/>
+        {/each}
     </div>
+    {#if $loading}
+        <div class="flex w-full justify-center items-center">
+            <span class="flex h-24 justify-center items-center">
+                <Loader2Icon class="size-5 mr-2 animate-spin"/>
+                Loading...
+            </span>
+        </div>
+    {/if}
 </div>
 
 
