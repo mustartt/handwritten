@@ -1,4 +1,5 @@
 import {fontFamily} from 'tailwindcss/defaultTheme';
+import plugin from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -6,7 +7,7 @@ const config = {
     content: ['./src/**/*.{html,js,svelte,ts}'],
     safelist: ['dark'],
     plugins: [
-        import('@tailwindcss/typography'),
+        plugin
     ],
     theme: {
         container: {

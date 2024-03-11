@@ -4,6 +4,6 @@
 
 <Navbar/>
 
-<div class="flex-auto flex w-full overflow-y-auto">
+<div class="flex-auto flex w-full">
     <slot/>
 </div>
