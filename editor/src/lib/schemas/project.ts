@@ -3,7 +3,7 @@ import {Timestamp} from 'firebase/firestore';
 
 const itemOutputSchema = z.object({
     extractedText: z.string()
-})
+});
 
 const baseItemSchema = z.object({
     id: z.string().uuid(),
@@ -44,6 +44,14 @@ const pdfPageItemSchema = baseItemSchema.extend({
 export const itemSchema = z.union([imageItemSchema, pdfPageItemSchema]);
 export type Item = z.infer<typeof itemSchema>;
 
+export const projectItemSchema = z.object({
+    itemId: z.string().uuid(),
+    name: z.string(),
+    meta: z.string().optional(),
+    preview: z.string().optional(),
+});
+export type ProjectItem = z.infer<typeof projectItemSchema>;
+
 export const projectSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
@@ -51,10 +59,7 @@ export const projectSchema = z.object({
     timeCreated: z.custom<Timestamp>(),
     timeUpdated: z.custom<Timestamp>(),
     coverImage: z.string().optional(),
-    items: z.array(z.object({
-        name: z.string(),
-        itemId: z.string().uuid()
-    }))
+    items: z.array(projectItemSchema)
 });
 export type Project = z.infer<typeof projectSchema>;
 export type ProjectPreview = Omit<Project, 'items'>;

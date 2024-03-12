@@ -16,7 +16,7 @@
          alt="preview"
          class="object-cover w-full h-48"/>
     <div class="flex-none h-10 px-4 w-full flex justify-between items-center">
-        <div class="flex justify-center items-center space-x-4">
+        <div class="flex justify-center items-center space-x-2">
             <span class="font-semibold">{name}</span>
             <span class="mt-1 text-sm text-muted-foreground">{meta}</span>
         </div>

@@ -17,7 +17,7 @@
         Sortable.create(listEl, {
             animation: 500,
             sort: true,
-            delay: 200,
+            delay: 100,
             delayOnTouchOnly: true,
             touchStartThreshold: 10
         });
