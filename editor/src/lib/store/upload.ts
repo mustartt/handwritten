@@ -48,6 +48,7 @@ const fileUploadCompletionPool = new PromisePool(1);
 
 export async function createFileUpload(file: File, projectId: string) {
     const handle = uuidv4();
+    console.log('Created file upload', handle, file.name, projectId);
     fileQueueState.update(state => {
         state.set(handle, {
             id: handle,

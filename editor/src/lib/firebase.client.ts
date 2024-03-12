@@ -15,7 +15,7 @@ const firebaseConfig = {
     messagingSenderId: "38157552520",
     appId: "1:38157552520:web:d9ddb9ab42fbeae7f4483d",
     measurementId: "G-RFBS1HHTP5",
-    useEmulator: false
+    useEmulator: true
 };
 
 export let app: FirebaseApp;
@@ -52,7 +52,7 @@ export async function getCurrentUser() {
     const result = await new Promise((resolve) => {
         unsub = onAuthStateChanged(auth, (user) => {
             resolve(user);
-        })
+        });
     });
     if (unsub!) {
         unsub();
