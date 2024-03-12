@@ -27,7 +27,7 @@
     };
 </script>
 
-<span class="z-10 fixed cursor-grab p-4 rounded"
+<span class="z-10 absolute cursor-grab p-4 rounded"
       use:draggable={{
             position: position,
             onDrag: ({offsetX, offsetY}) => {
