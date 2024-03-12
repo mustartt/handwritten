@@ -78,15 +78,41 @@
     background-color: hsl(var(--primary));
 }
 
-/* editor style */
 .carta-editor {
-    width: 100%;
+    @apply flex-auto bg-card;
+    font-size: 0.95rem;
 }
 
 .carta-wrapper {
-    height: 100%;
+    @apply flex-auto overflow-y-auto min-h-0 max-h-full;
 }
 
 .carta-container {
-    height: 100%;
+    @apply min-h-[32px] max-h-full;
+}
+
+
+.carta-input {
+    @apply caret-zinc-400 dark:caret-zinc-100;
+}
+
+.carta-renderer {
+    @apply prose prose-invert prose-pre:bg-zinc-50;
+}
+
+.carta-font-code {
+
+}
+
+/* item preview table */
+.sortable-ghost {
+    @apply border-2 border-primary;
+}
+
+.sortable-chosen {
+    @apply border-2 border-primary;
+}
+
+.sortable-drag {
+    @apply border-2 border-primary;
 }
