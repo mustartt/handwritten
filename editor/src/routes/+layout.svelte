@@ -9,11 +9,19 @@
     import {Toaster} from "$lib/components/ui/sonner";
     import {toast} from "svelte-sonner";
 
-    let authUnsub: any;
+    // let authUnsub: any;
     let displayLogoutTimeoutID: NodeJS.Timeout;
 
     onMount(async () => {
-        authUnsub = onAuthStateChanged(auth, user => {
+        setTimeout(() => {
+            const warning = document.getElementsByClassName("firebase-emulator-warning");
+            for (const element of warning) {
+                (element as HTMLElement).style.display = "none";
+                toast.info("Disabled firebase emulator warnings");
+            }
+        }, 3000);
+
+        onAuthStateChanged(auth, user => {
             console.log("auth:changed", user);
             session.update((value) => {
                 value.isLoading = true;

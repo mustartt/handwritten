@@ -5,6 +5,21 @@ const itemOutputSchema = z.object({
     extractedText: z.string()
 });
 
+const pointSchema = z.object({
+    x: z.number(),
+    y: z.number()
+});
+export type ScanPoint = z.infer<typeof pointSchema>;
+
+const scanBorderSchema = z.object({
+    topLeft: pointSchema,
+    topRight: pointSchema,
+    bottomLeft: pointSchema,
+    bottomRight: pointSchema,
+});
+
+export type ScanBorder = z.infer<typeof scanBorderSchema>;
+
 const baseItemSchema = z.object({
     id: z.string().uuid(),
     filename: z.string(),
@@ -17,6 +32,7 @@ const baseItemSchema = z.object({
 const imageItemSchema = baseItemSchema.extend({
     type: z.literal('image'),
     image: z.object({
+        scanBorder: scanBorderSchema.optional(),
         imageUri: z.string(),
         scanUri: z.string().optional(),
         documentType: z.union([
@@ -30,6 +46,7 @@ const imageItemSchema = baseItemSchema.extend({
 const pdfPageItemSchema = baseItemSchema.extend({
     type: z.literal('pdf'),
     pdf: z.object({
+        scanBorder: scanBorderSchema.optional(),
         pageNumber: z.number().positive(),
         imageUri: z.string(),
         scanUri: z.string().optional(),

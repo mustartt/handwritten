@@ -1,17 +1,26 @@
 <script lang="ts">
     import ItemPreview from "$lib/components/item-preview/ItemPreview.svelte";
     import {cn} from "$lib/utils";
-
     import Sortable from 'sortablejs';
     import {onMount} from "svelte";
-
-    const items = Array.from(Array(10).keys())
-        .map((idx) => ({
-            id: `id-${idx}`,
-            value: `Item ${idx}`
-        }));
+    import {editor, queueSaveProject} from "$lib/store/project";
 
     let listEl: HTMLElement;
+
+    function handleSwap(fromIdx: number, toIdx: number) {
+        if (!$editor.project?.id) return;
+        editor.update(store => {
+            const items = store.project?.items;
+            if (!items) return store;
+
+            const temp = items[fromIdx];
+            items[fromIdx] = items[toIdx];
+            items[toIdx] = temp;
+
+            return store;
+        });
+        queueSaveProject($editor.project?.id);
+    }
 
     onMount(() => {
         Sortable.create(listEl, {
@@ -19,7 +28,11 @@
             sort: true,
             delay: 100,
             delayOnTouchOnly: true,
-            touchStartThreshold: 10
+            touchStartThreshold: 10,
+            onEnd: ({oldIndex, newIndex}) => {
+                if (oldIndex == newIndex || oldIndex === undefined || newIndex === undefined) return;
+                handleSwap(oldIndex, newIndex);
+            }
         });
     });
 </script>
@@ -32,19 +45,15 @@
             "list-group",
             "w-full @md:w-[28rem] @2xl:w-[43rem]"
         )}>
-        <ItemPreview idx={1} name="IMG_1000.jpg" meta="(1)"/>
-        <ItemPreview idx={2} name="IMG_1100.jpg" meta="(2)"/>
-        <!--        <ItemPreview idx={3} name="IMG_1200.jpg" meta="(3)"/>-->
-        <!--        <ItemPreview idx={4} name="IMG_1300.jpg" meta="(4)"/>-->
-        <!--        <ItemPreview idx={5} name="IMG_1400.jpg" meta="(5)"/>-->
-        <!--        <ItemPreview idx={6} name="IMG_1500.jpg" meta="(6)"/>-->
-        <!--        <ItemPreview idx={7} name="IMG_1600.jpg" meta="(7)"/>-->
-        <!--        <ItemPreview idx={5} name="IMG_1400.jpg" meta="(5)"/>-->
-        <!--        <ItemPreview idx={6} name="IMG_1500.jpg" meta="(6)"/>-->
-        <!--        <ItemPreview idx={7} name="IMG_1600.jpg" meta="(7)"/>-->
-        <!--        <ItemPreview idx={5} name="IMG_1400.jpg" meta="(5)"/>-->
-        <!--        <ItemPreview idx={6} name="IMG_1500.jpg" meta="(6)"/>-->
-        <!--        <ItemPreview idx={7} name="IMG_1600.jpg" meta="(7)"/>-->
+        {#if $editor.project}
+            {#each $editor.project.items as item, index (item.itemId)}
+                <ItemPreview idx={index + 1}
+                             id={item.itemId}
+                             name={item.name}
+                             meta={item.meta || ''}
+                             image={item.preview}/>
+            {/each}
+        {/if}
     </div>
 </div>
 

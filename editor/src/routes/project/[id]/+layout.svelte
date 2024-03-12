@@ -1,20 +1,49 @@
 <script lang="ts">
     import * as Tabs from "$lib/components/ui/tabs";
-    import {ApertureIcon, FolderIcon, ScanTextIcon, UploadCloudIcon} from "lucide-svelte";
-    import PreviewTable from "$lib/components/item-preview/PreviewTable.svelte";
+    import {ApertureIcon, FolderIcon, ScanTextIcon} from "lucide-svelte";
     import {Separator} from "$lib/components/ui/separator";
-    import {Button} from "$lib/components/ui/button";
     import FileUploadDialogue, {type UploadEvent} from "$lib/components/item-preview/FileUploadDialogue.svelte";
     import {page} from "$app/stores";
     import {createFileUpload} from "$lib/store/upload";
+    import {onDestroy, onMount} from "svelte";
+    import {editor, subscribeToProjectUpdates} from "$lib/store/project";
+    import type {Unsubscribe} from "firebase/firestore";
+    import ItemPreviewContent from "$lib/components/item-preview/ItemPreviewContent.svelte";
 
     let fileUploadHandler: () => void;
 
     async function handleFileUploads(event: CustomEvent<UploadEvent>) {
         for (const file of event.detail.files) {
-            createFileUpload(file, $page.params.id);
+            await createFileUpload(file, $page.params.id);
         }
     }
+
+    let unsub: Unsubscribe | undefined;
+    onMount(async () => {
+        const projectId = $page.params.id;
+        editor.update((value) => {
+            value.isProjectLoading = true;
+            return value;
+        });
+        unsub = await subscribeToProjectUpdates(projectId, (data) => {
+            editor.update((value) => {
+                value.isProjectLoading = false;
+                value.project = data;
+                return value;
+            });
+        });
+    });
+
+    onDestroy(() => {
+        if (unsub) {
+            unsub();
+        }
+        editor.update((value) => {
+            value.isProjectLoading = true;
+            value.project = null;
+            return value;
+        });
+    });
 </script>
 
 <!--HTML Parent Content-->
@@ -30,23 +59,7 @@
     <Tabs.Root value="files" class="flex-1 flex flex-col w-full justify-center overflow-hidden">
         <Tabs.Content value="files"
                       class="w-full h-full mt-0 overflow-hidden">
-            <div class="flex flex-col w-full h-full">
-                <div class="shrink-0 flex px-4 py-2 justify-between items-center">
-                    <h1 class="text-2xl font-bold">Files</h1>
-                    <div class="flex items-center">
-                        <Button variant="outline" on:click={fileUploadHandler}>
-                            <UploadCloudIcon class="size-5 mr-2"/>
-                            Upload
-                        </Button>
-                    </div>
-                </div>
-                <Separator/>
-                <div class="flex-1 bg-background overflow-hidden">
-                    <div class="h-full px-4 pt-4 overflow-y-auto">
-                        <PreviewTable/>
-                    </div>
-                </div>
-            </div>
+            <ItemPreviewContent/>
         </Tabs.Content>
         <Tabs.Content value="scanner"
                       class="h-full bg-green-500 mt-0">
