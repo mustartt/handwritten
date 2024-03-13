@@ -24,7 +24,7 @@ const baseItemSchema = z.object({
     id: z.string().uuid(),
     filename: z.string(),
     owner: z.string(),
-    timeUploaded: z.date(),
+    timeUploaded: z.custom<Timestamp>(),
     parentProject: z.string().uuid(),
     output: itemOutputSchema
 });

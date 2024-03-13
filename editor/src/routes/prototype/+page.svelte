@@ -1,18 +1,9 @@
-<div class="flex flex-col w-full h-full">
-    <div class="flex-none h-16 bg-red-500">
+<script>
+    import ScanPreview from '$lib/components/image-scanner/ScanPreview.svelte';
+</script>
 
-    </div>
-    <div class="flex-1 bg-yellow-500 overflow-hidden">
-        <div class="h-full overflow-y-auto">
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-            <div class="size-32 bg-green-500 m-4"></div>
-        </div>
-    </div>
+<div class="flex flex-col w-full h-full">
+    <ScanPreview
+            preview={"http://127.0.0.1:9199/hand-written-prod.appspot.com/scan%2F454bb2d6-e0bf-4689-a6fb-bc7d7b529496"}
+            generation="123"/>
 </div>

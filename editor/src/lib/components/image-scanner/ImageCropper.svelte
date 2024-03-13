@@ -1,7 +1,7 @@
 <script lang="ts">
     import BorderHandle, {type Position} from "$lib/components/image-scanner/BorderHandle.svelte";
     import BorderLine from "$lib/components/image-scanner/BorderLine.svelte";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import {CogIcon, RotateCwIcon, ScanLineIcon} from "lucide-svelte";
     import {Button} from "$lib/components/ui/button";
     import {Separator} from "$lib/components/ui/separator";
@@ -9,6 +9,8 @@
 
     export let image: string;
     export let border: ScanBorder | undefined = undefined;
+
+    const dispatch = createEventDispatcher();
 
     let oldContainerWidth: number;
     let oldContainerHeight: number;
@@ -30,12 +32,11 @@
     onMount(() => {
         oldContainerWidth = containerWidth;
         oldContainerHeight = containerHeight;
-
-        resetBorder(border);
-        ready = true;
     });
 
     function onImageLoad() {
+        resetBorder(border);
+        ready = true;
     }
 
     function scaleContain(width: number, height: number, maxWidth: number, maxHeight: number) {
@@ -92,13 +93,22 @@
         };
     }
 
-    function scan() {
-        const topLeft = transformFromCanvasToImageCoords(position1, containerWidth, containerHeight + heightOffset);
-        const topRight = transformFromCanvasToImageCoords(position2, containerWidth, containerHeight + heightOffset);
-        const bottomRight = transformFromCanvasToImageCoords(position3, containerWidth, containerHeight + heightOffset);
-        const bottomLeft = transformFromCanvasToImageCoords(position4, containerWidth, containerHeight + heightOffset);
+    function floorPosition(position: Position): Position {
+        return {
+            x: Math.floor(position.x),
+            y: Math.floor(position.y),
+        };
+    }
 
-        console.log(topLeft, topRight, bottomRight, bottomLeft);
+    function scan() {
+        const topLeft = floorPosition(transformFromCanvasToImageCoords(position1, containerWidth, containerHeight + heightOffset));
+        const topRight = floorPosition(transformFromCanvasToImageCoords(position2, containerWidth, containerHeight + heightOffset));
+        const bottomRight = floorPosition(transformFromCanvasToImageCoords(position3, containerWidth, containerHeight + heightOffset));
+        const bottomLeft = floorPosition(transformFromCanvasToImageCoords(position4, containerWidth, containerHeight + heightOffset));
+
+        dispatch('scan', {
+            topLeft, topRight, bottomRight, bottomLeft
+        });
     }
 
     function resetBorder(scanBorder?: ScanBorder) {

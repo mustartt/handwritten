@@ -1,8 +1,8 @@
-import type {Item, Project, ProjectPreview} from "$lib/schemas/project";
+import {type Item, itemSchema, type Project, type ProjectPreview} from "$lib/schemas/project";
 import {derived, get, writable} from "svelte/store";
 import {firestore, getCurrentUser} from "$lib/firebase.client";
 import {toast} from "svelte-sonner";
-import {collection, doc, getDocs, onSnapshot, query, setDoc, where} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, where} from "firebase/firestore";
 import {projectSchema} from "$lib/schemas/project";
 
 export interface ProjectState {
@@ -68,16 +68,24 @@ export interface EditorState {
     isProjectLoading: boolean;
     isProjectSaving: boolean;
     project: Project | null;
-    activeItemId: string | null;
+
+    isItemLoading: boolean;
     item: Item | null;
+    scannerTab: 'scanner' | 'result';
+    previewGeneration: number,
+    isScanning: boolean
 }
 
 export const editor = writable<EditorState>({
     isProjectLoading: true,
     isProjectSaving: false,
     project: null,
-    activeItemId: null,
-    item: null
+
+    isItemLoading: false,
+    item: null,
+    scannerTab: "result",
+    previewGeneration: 0,
+    isScanning: false,
 });
 
 export async function subscribeToProjectUpdates(projectId: string, handler: (value: Project) => void) {
@@ -123,4 +131,29 @@ export async function queueSaveProject(projectId: string) {
             });
         }
     }, 5000);
+}
+
+export async function loadEditorItem(itemId: string) {
+    editor.update(store => {
+        store.isItemLoading = true;
+        return store;
+    });
+    try {
+        const itemRef = doc(firestore, 'items', itemId);
+        const itemDoc = await getDoc(itemRef);
+        const itemData = itemSchema.parse(itemDoc.data());
+
+        editor.update(store => {
+            store.item = itemData;
+            return store;
+        });
+    } catch (err) {
+        toast.error('Failed to load editor item');
+        console.error(err);
+    } finally {
+        editor.update(store => {
+            store.isProjectSaving = false;
+            return store;
+        });
+    }
 }

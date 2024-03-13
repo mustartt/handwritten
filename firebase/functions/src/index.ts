@@ -1,12 +1,22 @@
 import * as logger from "firebase-functions/logger";
 import {onObjectFinalized} from "firebase-functions/v2/storage";
+import {HttpsError, onCall} from "firebase-functions/v2/https";
+
 import * as path from "path";
 import {getStorage} from "firebase-admin/storage";
 import sharp = require("sharp");
 import * as admin from "firebase-admin";
 import {firestore, storage} from "firebase-admin";
 import {v4 as uuidv4} from 'uuid';
-import {Item, projectSchema} from "./schemas";
+import {
+    Item,
+    itemSchema,
+    projectSchema,
+    ScanBorder,
+    scanImageRequestSchema,
+    ScanImageResponse,
+    scanImageResponseSchema
+} from "./schemas";
 import {Timestamp} from "firebase-admin/firestore";
 
 admin.initializeApp();
@@ -67,6 +77,7 @@ export const rescalePreviewImage = onObjectFinalized({}, async (event) => {
 
 export const createProjectItem = onObjectFinalized({}, async (event) => {
     const filePath = event.data.name;
+    const filename = path.basename(filePath);
     const contentType = event.data.contentType;
     const metadata = event.data.metadata;
 
@@ -86,7 +97,7 @@ export const createProjectItem = onObjectFinalized({}, async (event) => {
 
     const projectId = metadata['projectId'];
     const db = firestore();
-    const itemId = uuidv4();
+    const itemId = filename;
     await db.runTransaction(async (txn) => {
         const proj = await txn.get(db.doc(`projects/${projectId}`));
         if (!proj.exists) {
@@ -122,3 +133,87 @@ export const createProjectItem = onObjectFinalized({}, async (event) => {
         txn.create(itemRef, newItem);
     });
 });
+
+function formatScanBorder(border: ScanBorder) {
+    return {
+        top_left: [border.topLeft.x, border.topLeft.y],
+        top_right: [border.topRight.x, border.topRight.y],
+        bottom_left: [border.bottomLeft.x, border.bottomLeft.y],
+        bottom_right: [border.bottomRight.x, border.bottomRight.y],
+    };
+}
+
+function convertToScanBorder(border: ScanImageResponse['scan_border']): ScanBorder {
+    return {
+        topLeft: {x: border.top_left[0], y: border.top_left[1]},
+        topRight: {x: border.top_right[0], y: border.top_right[1]},
+        bottomLeft: {x: border.bottom_left[0], y: border.bottom_left[1]},
+        bottomRight: {x: border.bottom_right[0], y: border.bottom_right[1]},
+    };
+}
+
+export const scanItem = onCall({
+        cors: true,
+    },
+    async (request) => {
+        const {itemId, scanBorder, settings} = scanImageRequestSchema.parse(request.data);
+        const uid = request.auth?.uid;
+        if (!uid) {
+            return new HttpsError('unauthenticated', 'not logged in');
+        }
+
+        const db = firestore();
+
+        const itemRef = db.doc(`items/${itemId}`);
+        const itemDoc = await itemRef.get();
+        if (!itemDoc.exists) {
+            return new HttpsError('not-found', 'item not found');
+        }
+        const itemData = itemSchema.parse(itemDoc.data());
+        if (itemData.type !== 'image') {
+            return new HttpsError('unimplemented', 'only supports image right now');
+        }
+
+        const bucket = getStorage().bucket();
+        const downloadResponse = await bucket.file(`preview/${itemId}`).download();
+        const imageBase64 = downloadResponse[0].toString('base64');
+
+        let requestBody = {
+            id: uuidv4(),
+            scan_type: settings.documentType,
+            image_url: 'data:image/jpeg;base64,' + imageBase64,
+            ...(scanBorder ? {scan_border: formatScanBorder(scanBorder)} : {})
+        };
+        const scanResultResponse = await fetch('https://docscanner-krqk5btmpq-uc.a.run.app/api/v1/image/scan', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody)
+        });
+        const scanResult = scanImageResponseSchema.parse(await scanResultResponse.json());
+
+        const bufferHeader = 'data:image/jpeg;base64,';
+        const scanBuffer = Buffer.from(scanResult.image_data.substring(bufferHeader.length), 'base64');
+
+        const file = bucket.file(`scan/${itemId}`);
+        await file.save(scanBuffer, {
+            metadata: {
+                contentType: 'image/jpeg',
+            }
+        });
+        let uri = itemData.image.scanUri;
+        if (!itemData.image.scanUri) {
+            await file.makePublic();
+            const scannedUri = file.publicUrl();
+            await itemRef.update({
+                'image.scanUri': scannedUri
+            });
+            uri = scannedUri;
+        }
+
+        return {
+            scanUri: uri,
+            scanBorder: convertToScanBorder(scanResult.scan_border)
+        };
+    });
