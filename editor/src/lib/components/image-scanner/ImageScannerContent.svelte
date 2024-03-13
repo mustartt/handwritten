@@ -12,16 +12,20 @@
 
         console.log('scanning start');
         const scanFunction = httpsCallable(functions, 'scanItem');
-        await scanFunction({
+        const result = await scanFunction({
             itemId: itemId,
             scanBorder: event.detail,
             settings: {
                 documentType: 'scan_notes'
             }
         });
-        console.log('scanning done');
+        console.log('scanning done', result);
         editor.update(store => {
             store.previewGeneration += 1;
+            if (store.item && store.item.type === 'image') {
+                store.item.image.scanUri = (result.data as any).scanUri;
+                store.item.image.scanBorder = (result.data as any).scanBorder;
+            }
             store.scannerTab = 'result';
             return store;
         });

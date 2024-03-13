@@ -4,6 +4,7 @@
     import {math} from "@cartamd/plugin-math";
     import {code} from "@cartamd/plugin-code";
     import 'carta-md/light.css';
+
     import '@cartamd/plugin-code/default.css';
     import 'katex/dist/katex.css';
 

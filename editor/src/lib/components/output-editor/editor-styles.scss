@@ -1,0 +1,89 @@
+
+.carta-theme__github {
+  &.carta-editor {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    height: 100%;
+
+    &:focus-within {
+      outline: 2px solid hsl(var(--primary));
+    }
+
+    .carta-wrapper {
+      padding: 1rem;
+      flex-grow: 1;
+      overflow-y: auto;
+
+      .carta-container {
+        min-height: 120px;
+        max-height: 100%;
+      }
+
+      .carta-renderer {
+        @apply border-l-[1px] pl-4;
+      }
+
+      .markdown-body {
+        @apply prose dark:prose-invert prose-li:my-0 prose-h1:mb-2;
+      }
+    }
+
+    .carta-font-code {
+      font-family: 'Fira Code', monospace;
+      caret-color: white;
+    }
+
+    .carta-toolbar {
+      height: 2.5rem;
+
+      background-color: hsl(var(--popover));
+      border-bottom: 1px solid hsl(var(--border));
+
+      padding-right: 12px;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+
+      .carta-icon {
+        width: 2rem;
+        height: 2rem;
+
+        &:hover {
+          color: white;
+          background-color: hsl(var(--border));
+        }
+      }
+    }
+
+    .carta-toolbar-left {
+      & > *:first-child {
+        border-top-left-radius: 0.5rem;
+      }
+
+      & > * {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.95rem;
+      }
+
+      .carta-active {
+        height: 100%;
+        background-color: hsl(var(--card));
+        transform: translateY(1px);
+        color: white;
+
+        border-right: 1px solid hsl(var(--border));
+        border-bottom: 1px solid hsl(var(--card));
+
+        &:not(:first-child) {
+          border-left: 1px solid hsl(var(--border));
+        }
+      }
+    }
+
+    [class*='shj-lang-'] {
+      background: transparent;
+    }
+  }
+}

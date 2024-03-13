@@ -8,6 +8,7 @@
     import {auth} from '$lib/firebase.client';
     import {Toaster} from "$lib/components/ui/sonner";
     import {toast} from "svelte-sonner";
+    import {ModeWatcher} from "mode-watcher";
 
     // let authUnsub: any;
     let displayLogoutTimeoutID: NodeJS.Timeout;
@@ -63,5 +64,6 @@
 </script>
 
 <Toaster closeButton={true} expand={true}/>
+<ModeWatcher/>
 
 <slot/>

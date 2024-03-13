@@ -17,24 +17,27 @@
     }
 </script>
 
-<div bind:clientWidth={containerWidth}
-     bind:clientHeight={containerHeight}
-     class="relative flex flex-col w-full h-full justify-center items-center p-6 bg-card">
-    <Button variant="secondary" class="absolute top-4 left-4" on:click={navigateBackToScanner}>
-        <ArrowLeftIcon class="size-5 mr-2"/>
-        Back
-    </Button>
-    {#if preview === undefined}
-        <div class="flex flex-col w-full h-full justify-center items-center">
-            <p class="font-semibold text-2xl text-nowrap">
-                No Image Scanned
-            </p>
-        </div>
-    {:else}
-        <div style={`width: ${containerWidth}px; height: ${containerHeight - 53}px;`}>
-            <img src={`${preview}${generation !== undefined ? '?generation=' + generation : ''}`}
-                 class="w-full h-full object-contain rounded"
-                 alt="scanned doc"/>
-        </div>
-    {/if}
+<div class="w-full h-full bg-card p-4">
+    <div bind:clientWidth={containerWidth}
+         bind:clientHeight={containerHeight}
+         class="relative flex flex-col w-full h-full justify-center items-center rounded">
+        <Button variant="secondary" class="absolute top-4 left-4" on:click={navigateBackToScanner}>
+            <ArrowLeftIcon class="size-5 mr-2"/>
+            Back
+        </Button>
+        {#if preview === undefined}
+            <div class="flex flex-col w-full h-full justify-center items-center">
+                <p class="font-semibold text-2xl text-nowrap">
+                    No Image Scanned
+                </p>
+            </div>
+        {:else}
+            <div class="rounded overflow-hidden"
+                 style={`width: ${containerWidth}px; height: ${containerHeight - 53}px;`}>
+                <img src={`${preview}${generation !== undefined ? '?generation=' + generation : ''}`}
+                     class="w-full h-full object-contain"
+                     alt="scanned doc"/>
+            </div>
+        {/if}
+    </div>
 </div>
