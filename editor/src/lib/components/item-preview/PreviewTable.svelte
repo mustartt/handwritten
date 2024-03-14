@@ -1,6 +1,5 @@
 <script lang="ts">
     import ItemPreview from "$lib/components/item-preview/ItemPreview.svelte";
-    import {cn} from "$lib/utils";
     import Sortable from 'sortablejs';
     import {onMount} from "svelte";
     import {editor, queueSaveProject} from "$lib/store/project";
@@ -37,24 +36,23 @@
     });
 </script>
 
-<div class="flex justify-center @container">
-    <div bind:this={listEl}
-         class={cn(
-            "flex flex-col @md:grid @md:grid-cols-2 @2xl:grid-cols-3",
-            "space-y-4 @md:space-y-0 @md:gap-4",
-            "list-group",
-            "w-full @md:w-[28rem] @2xl:w-[43rem]"
-        )}>
-        {#if $editor.project}
-            {#each $editor.project.items as item, index (item.itemId)}
-                <ItemPreview idx={index + 1}
-                             id={item.itemId}
-                             name={item.name}
-                             meta={item.meta || ''}
-                             image={item.preview}/>
-            {/each}
-        {/if}
-    </div>
+<style>
+    .custom-grid-auto {
+        grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    }
+</style>
+
+<div bind:this={listEl}
+     class="list-group grid gap-4 custom-grid-auto">
+    {#if $editor.project}
+        {#each $editor.project.items as item, index (item.itemId)}
+            <ItemPreview idx={index + 1}
+                         id={item.itemId}
+                         name={item.name}
+                         meta={item.meta || ''}
+                         image={item.preview}/>
+        {/each}
+    {/if}
 </div>
 
 <!--"flex flex-col list-group w-full",-->

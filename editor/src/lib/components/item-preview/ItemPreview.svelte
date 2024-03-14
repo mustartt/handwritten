@@ -11,7 +11,7 @@
 </script>
 
 <a class={cn(
-        "list-group-item border-2 border-transparent relative flex flex-col @md:w-52 rounded bg-card justify-center items-center overflow-hidden",
+        "list-group-item border-2 border-transparent relative flex flex-col w-full rounded bg-card justify-center items-center overflow-hidden",
         $page.url.searchParams.get('item') === id ? "border-primary" : ""
     )}
    tabindex="0"

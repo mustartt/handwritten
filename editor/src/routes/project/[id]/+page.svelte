@@ -70,7 +70,7 @@
             <Resizable.Pane class="min-h-0"
                             order={1}
                             defaultSize={20}
-                            minSize={20}>
+                            minSize={10}>
                 <ItemPreviewContent/>
             </Resizable.Pane>
             <Resizable.Handle withHandle/>
