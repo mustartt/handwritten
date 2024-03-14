@@ -35,8 +35,17 @@
     });
 
     function onImageLoad() {
-        resetBorder(border);
-        ready = true;
+        console.log('load');
+        if (border) {
+            resetBorder(border);
+            ready = true;
+        }
+    }
+
+    $: {
+        image;
+        ready = false;
+        console.log('changed');
     }
 
     function handleDragged() {
@@ -110,9 +119,10 @@
         const bottomRight = floorPosition(transformFromCanvasToImageCoords(position3, containerWidth, containerHeight));
         const bottomLeft = floorPosition(transformFromCanvasToImageCoords(position4, containerWidth, containerHeight));
 
-        dispatch('scan', {
-            topLeft, topRight, bottomRight, bottomLeft
-        });
+        dispatch('scan', ready
+            ? {topLeft, topRight, bottomRight, bottomLeft}
+            : undefined
+        );
     }
 
     function resetBorder(scanBorder?: ScanBorder) {
@@ -132,6 +142,8 @@
         position2 = transformFromImageToCanvasCoords(topRight, containerWidth, containerHeight);
         position3 = transformFromImageToCanvasCoords(bottomRight, containerWidth, containerHeight);
         position4 = transformFromImageToCanvasCoords(bottomLeft, containerWidth, containerHeight);
+
+        ready = true;
 
         dispatch('changed');
     }

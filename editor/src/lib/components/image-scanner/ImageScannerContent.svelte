@@ -5,7 +5,6 @@
     import {httpsCallable} from "firebase/functions";
     import {functions} from "$lib/firebase.client";
     import {toast} from "svelte-sonner";
-    import {onDestroy, onMount} from "svelte";
 
     export let itemId: string | undefined;
 
@@ -17,11 +16,11 @@
             return store;
         });
         try {
-            console.log('scanning start');
+            console.log('scanning start', event.detail);
             const scanFunction = httpsCallable(functions, 'scanItem');
             const result = await scanFunction({
                 itemId: itemId,
-                scanBorder: event.detail,
+                ...(event.detail ? {scanBorder: event.detail} : {}),
                 settings: {
                     documentType: 'scan_notes'
                 }
