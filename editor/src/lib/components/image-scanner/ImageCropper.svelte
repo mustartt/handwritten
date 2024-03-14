@@ -39,6 +39,10 @@
         ready = true;
     }
 
+    function handleDragged() {
+        dispatch('changed');
+    }
+
     function scaleContain(width: number, height: number, maxWidth: number, maxHeight: number) {
         if (width > maxWidth) {
             const scale = width / maxWidth;
@@ -128,6 +132,8 @@
         position2 = transformFromImageToCanvasCoords(topRight, containerWidth, containerHeight);
         position3 = transformFromImageToCanvasCoords(bottomRight, containerWidth, containerHeight);
         position4 = transformFromImageToCanvasCoords(bottomLeft, containerWidth, containerHeight);
+
+        dispatch('changed');
     }
 
     $: {
@@ -162,10 +168,22 @@
         <div class="absolute"
              style={`width: ${containerWidth}px; height: ${containerHeight}px;`}>
             {#if ready}
-                <BorderHandle bind:position={position1} width={containerWidth} height={containerHeight}/>
-                <BorderHandle bind:position={position2} width={containerWidth} height={containerHeight}/>
-                <BorderHandle bind:position={position3} width={containerWidth} height={containerHeight}/>
-                <BorderHandle bind:position={position4} width={containerWidth} height={containerHeight}/>
+                <BorderHandle on:moved={handleDragged}
+                              bind:position={position1}
+                              width={containerWidth}
+                              height={containerHeight}/>
+                <BorderHandle on:moved={handleDragged}
+                              bind:position={position2}
+                              width={containerWidth}
+                              height={containerHeight}/>
+                <BorderHandle on:moved={handleDragged}
+                              bind:position={position3}
+                              width={containerWidth}
+                              height={containerHeight}/>
+                <BorderHandle on:moved={handleDragged}
+                              bind:position={position4}
+                              width={containerWidth}
+                              height={containerHeight}/>
                 <BorderLine width={containerWidth} height={containerHeight}
                             pos1={position1} pos2={position2} pos3={position3} pos4={position4}/>
             {/if}

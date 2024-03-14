@@ -9,6 +9,7 @@
     import ImageScannerContent from "$lib/components/image-scanner/ImageScannerContent.svelte";
     import OutputEditorContent from '$lib/components/output-editor/OuputEditorContent.svelte';
     import * as Resizable from "$lib/components/ui/resizable";
+    import CloudSaveIcon from "$lib/components/ui/cloud-save-icon/CloudSaveIcon.svelte";
 
     let itemId: string | undefined;
 
@@ -63,8 +64,8 @@
         </div>
     </Tabs.Root>
     <div class="flex-1 hidden lg:flex flex-col min-h-0">
-        <div class="flex h-9 bg-red-500/10 justify-center items-center">
-            Tool bar
+        <div class="flex h-9 justify-center items-center">
+            <CloudSaveIcon/>
         </div>
         <Resizable.PaneGroup direction="horizontal">
             <Resizable.Pane class="min-h-0"

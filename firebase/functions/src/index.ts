@@ -202,18 +202,10 @@ export const scanItem = onCall({
                 contentType: 'image/jpeg',
             }
         });
-        let uri = itemData.image.scanUri;
-        if (!itemData.image.scanUri) {
-            await file.makePublic();
-            const scannedUri = file.publicUrl();
-            await itemRef.update({
-                'image.scanUri': scannedUri
-            });
-            uri = scannedUri;
-        }
+        await file.makePublic();
 
         return {
-            scanUri: uri,
+            scanUri: file.publicUrl(),
             scanBorder: convertToScanBorder(scanResult.scan_border)
         };
     });

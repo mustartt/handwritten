@@ -70,10 +70,12 @@ export interface EditorState {
     project: Project | null;
 
     isItemLoading: boolean;
+    isItemSaving: boolean;
+    isScanning: boolean;
+
     item: Item | null;
     scannerTab: 'scanner' | 'result';
-    previewGeneration: number,
-    isScanning: boolean
+    previewGeneration: number;
 }
 
 export const editor = writable<EditorState>({
@@ -82,10 +84,16 @@ export const editor = writable<EditorState>({
     project: null,
 
     isItemLoading: false,
+    isItemSaving: false,
+    isScanning: false,
+
     item: null,
     scannerTab: "scanner",
     previewGeneration: 0,
-    isScanning: false,
+});
+
+export const editorSave = derived(editor, store => {
+    return store.isItemSaving || store.isProjectSaving;
 });
 
 export async function subscribeToProjectUpdates(projectId: string, handler: (value: Project) => void) {
@@ -102,21 +110,21 @@ export async function subscribeToProjectUpdates(projectId: string, handler: (val
     });
 }
 
-let queueTimeoutId: NodeJS.Timeout;
+let projectTimeout: NodeJS.Timeout;
 
 export async function queueSaveProject(projectId: string) {
-    clearTimeout(queueTimeoutId);
-    queueTimeoutId = setTimeout(async () => {
+    editor.update(store => {
+        store.isProjectSaving = true;
+        return store;
+    });
+    clearTimeout(projectTimeout);
+    projectTimeout = setTimeout(async () => {
         const editorState = get(editor);
         if (!editorState.project || editorState.project.id !== projectId) {
             return;
         }
 
         console.log('Saving project', projectId);
-        editor.update(store => {
-            store.isProjectSaving = true;
-            return store;
-        });
         try {
             const projectRef = doc(firestore, 'projects', projectId);
             await setDoc(projectRef, editorState.project);
@@ -127,6 +135,37 @@ export async function queueSaveProject(projectId: string) {
         } finally {
             editor.update(store => {
                 store.isProjectSaving = false;
+                return store;
+            });
+        }
+    }, 5000);
+}
+
+let itemTimeout: NodeJS.Timeout;
+
+export async function queueSaveItem(itemId: string) {
+    editor.update(store => {
+        store.isItemSaving = true;
+        return store;
+    });
+    clearTimeout(itemTimeout);
+    itemTimeout = setTimeout(async () => {
+        const editorState = get(editor);
+        if (!editorState.item || editorState.item.id !== itemId) {
+            return;
+        }
+
+        console.log('Saving item', itemId);
+        try {
+            const itemRef = doc(firestore, 'items', itemId);
+            await setDoc(itemRef, editorState.item);
+            console.log('Saved item', itemId);
+        } catch (err) {
+            toast.error('Failed to save item');
+            console.error(err);
+        } finally {
+            editor.update(store => {
+                store.isItemSaving = false;
                 return store;
             });
         }
@@ -152,7 +191,7 @@ export async function loadEditorItem(itemId: string) {
         console.error(err);
     } finally {
         editor.update(store => {
-            store.isProjectSaving = false;
+            store.isItemLoading = false;
             return store;
         });
     }
