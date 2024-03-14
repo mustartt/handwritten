@@ -1,15 +1,15 @@
 
 .carta-theme__github {
   &.carta-editor {
-    background-color: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.5rem;
+    @apply bg-card;
+    //border: 1px solid hsl(var(--border));
+    //border-radius: 0.5rem;
     font-size: 0.95rem;
     height: 100%;
 
-    &:focus-within {
-      outline: 2px solid hsl(var(--primary));
-    }
+    //&:focus-within {
+    //  outline: 2px solid hsl(var(--primary));
+    //}
 
     .carta-wrapper {
       padding: 1rem;
@@ -22,7 +22,7 @@
       }
 
       .carta-renderer {
-        @apply border-l-[1px] pl-4;
+
       }
 
       .markdown-body {

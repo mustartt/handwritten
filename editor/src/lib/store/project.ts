@@ -83,7 +83,7 @@ export const editor = writable<EditorState>({
 
     isItemLoading: false,
     item: null,
-    scannerTab: "result",
+    scannerTab: "scanner",
     previewGeneration: 0,
     isScanning: false,
 });

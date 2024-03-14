@@ -7,6 +7,12 @@
 
     import '@cartamd/plugin-code/default.css';
     import 'katex/dist/katex.css';
+    import {editor} from "$lib/store/project";
+    import {onDestroy} from "svelte";
+
+    export let itemId: string | undefined;
+
+    let value = '';
 
     const carta = new Carta({
         extensions: [
@@ -15,10 +21,18 @@
         ]
     });
 
-    let value = ``;
+    const unsub = editor.subscribe(store => {
+        value = store.item?.output.extractedText || '';
+    });
 
+    $: {
+        value;
+        console.log('changed:', value);
+    }
+
+    onDestroy(unsub);
 </script>
 
 <div class="flex flex-col w-full h-full">
-    <CartaEditor {carta} theme="github" mode="split" bind:value/>
+    <CartaEditor {carta} theme="github" mode="auto" bind:value/>
 </div>

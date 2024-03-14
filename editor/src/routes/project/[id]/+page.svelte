@@ -81,7 +81,7 @@
             <Resizable.Pane order={3}
                             defaultSize={40}
                             minSize={35}>
-                3
+                <OutputEditorContent itemId={itemId}/>
             </Resizable.Pane>
         </Resizable.PaneGroup>
     </div>
