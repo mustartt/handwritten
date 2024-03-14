@@ -26,13 +26,10 @@
     });
 
     $: {
-        value;
-        console.log('changed:', value);
+
     }
 
     onDestroy(unsub);
 </script>
 
-<div class="block w-full h-full">
-    <CartaEditor {carta} theme="github" mode="auto" scroll="async" bind:value/>
-</div>
+<CartaEditor {carta} theme="github" mode="auto" scroll="sync" textarea={{autocomplete: "off"}} bind:value/>

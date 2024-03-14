@@ -1,19 +1,11 @@
 
 .carta-theme__github {
   &.carta-editor {
-    @apply bg-card;
-    //border: 1px solid hsl(var(--border));
-    //border-radius: 0.5rem;
+    @apply bg-card h-full;
     font-size: 0.95rem;
-    height: 100%;
-
-    //&:focus-within {
-    //  outline: 2px solid hsl(var(--primary));
-    //}
 
     .carta-wrapper {
-      padding: 1rem;
-      flex-grow: 1;
+      @apply p-4 flex-grow min-h-0;
 
       .carta-container {
         min-height: 120px;
@@ -21,13 +13,11 @@
       }
 
       .carta-input {
-        max-height: 100%;
-        overflow-y: auto;
+        @apply max-h-full overflow-y-auto overscroll-contain pr-2 pb-64;
       }
 
       .carta-renderer {
-        max-height: 100%;
-        overflow-y: auto;
+        @apply max-h-full overflow-y-auto overscroll-contain pl-2 pb-64;
       }
 
       .markdown-body {

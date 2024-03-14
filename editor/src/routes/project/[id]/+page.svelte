@@ -22,8 +22,6 @@
             itemId = id;
             loadItem(id);
         }
-
-
     });
 
     onDestroy(unsub);
@@ -82,11 +80,10 @@
                 <ImageScannerContent itemId={itemId}/>
             </Resizable.Pane>
             <Resizable.Handle withHandle/>
-            <Resizable.Pane order={3}
+            <Resizable.Pane class="min-h-0"
+                            order={3}
                             defaultSize={40}
-                            minSize={35}
-                            class="h-full"
-            >
+                            minSize={35}>
                 <OutputEditorContent itemId={itemId}/>
             </Resizable.Pane>
         </Resizable.PaneGroup>
