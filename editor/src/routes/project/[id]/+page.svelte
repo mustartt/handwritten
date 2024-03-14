@@ -22,11 +22,14 @@
             itemId = id;
             loadItem(id);
         }
+
+
     });
 
     onDestroy(unsub);
 </script>
-<div class="flex flex-col w-full h-full overflow-hidden">
+
+<div class="flex flex-col w-full h-full">
     <div class="shrink-0 h-12 bg-red-500">
 
     </div>
@@ -41,7 +44,7 @@
         </Tabs.Content>
         <Tabs.Content value="output"
                       class="h-full bg-green-500 mt-0">
-            <OutputEditorContent/>
+            <OutputEditorContent itemId={itemId}/>
         </Tabs.Content>
         <Separator/>
         <div class="shrink-0 flex justify-center py-2">
@@ -61,12 +64,13 @@
             </Tabs.List>
         </div>
     </Tabs.Root>
-    <div class="flex-1 hidden lg:flex flex-col">
+    <div class="flex-1 hidden lg:flex flex-col min-h-0">
         <div class="flex h-9 bg-red-500/10 justify-center items-center">
             Tool bar
         </div>
         <Resizable.PaneGroup direction="horizontal">
-            <Resizable.Pane order={1}
+            <Resizable.Pane class="min-h-0"
+                            order={1}
                             defaultSize={20}
                             minSize={20}>
                 <ItemPreviewContent/>
@@ -80,7 +84,9 @@
             <Resizable.Handle withHandle/>
             <Resizable.Pane order={3}
                             defaultSize={40}
-                            minSize={35}>
+                            minSize={35}
+                            class="h-full"
+            >
                 <OutputEditorContent itemId={itemId}/>
             </Resizable.Pane>
         </Resizable.PaneGroup>

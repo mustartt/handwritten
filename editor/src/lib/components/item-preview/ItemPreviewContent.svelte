@@ -29,9 +29,7 @@
         </div>
     </div>
     <Separator/>
-    <div class="flex-1 bg-background overflow-hidden">
-        <div class="h-full px-4 pt-4 overflow-y-auto">
-            <PreviewTable/>
-        </div>
+    <div class="flex-1 bg-background min-h-0 px-4 pt-4 pb-64 overflow-y-scroll overscroll-contain">
+        <PreviewTable/>
     </div>
 </div>

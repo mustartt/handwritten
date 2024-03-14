@@ -33,6 +33,6 @@
     onDestroy(unsub);
 </script>
 
-<div class="flex flex-col w-full h-full">
-    <CartaEditor {carta} theme="github" mode="auto" bind:value/>
+<div class="block w-full h-full">
+    <CartaEditor {carta} theme="github" mode="auto" scroll="async" bind:value/>
 </div>
