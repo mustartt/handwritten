@@ -48,6 +48,22 @@
         handleChanged();
     }
 
+    async function handleExtract() {
+        if (!itemId) {
+            return;
+        }
+        console.log('extracting text');
+        const extractFunction = httpsCallable(functions, 'extractText');
+        const result = await extractFunction({itemId});
+        console.log('finished extracing text:', result);
+        editor.update(store => {
+            if (store.item) {
+                store.item.output.extractedText = (result.data as any).result;
+            }
+            return store;
+        });
+    }
+
     function handleChanged() {
         if (itemId) {
             console.log('here 3');
@@ -63,7 +79,8 @@
                       image={$editor.item.image.imageUri}
                       border={$editor.item.image.scanBorder}/>
     {:else}
-        <ScanPreview preview={$editor.item.image.scanUri}
+        <ScanPreview on:extract={handleExtract}
+                     preview={$editor.item.image.scanUri}
                      generation={$editor.previewGeneration.toString()}/>
     {/if}
 {/if}

@@ -2,12 +2,15 @@
     import {Button} from "$lib/components/ui/button";
     import {ArrowLeftIcon} from "lucide-svelte";
     import {editor} from "$lib/store/project";
+    import {createEventDispatcher} from "svelte";
 
     export let preview: string | undefined;
     export let generation: string | undefined;
 
     let containerWidth: number;
     let containerHeight: number;
+
+    const dispatch = createEventDispatcher();
 
     function navigateBackToScanner() {
         editor.update(store => {
@@ -17,10 +20,10 @@
     }
 </script>
 
-<div class="w-full h-full bg-card p-4">
+<div class="flex flex-col w-full h-full bg-card p-4">
     <div bind:clientWidth={containerWidth}
          bind:clientHeight={containerHeight}
-         class="relative flex flex-col w-full h-full justify-center items-center rounded">
+         class="relative flex-1 flex flex-col w-full justify-center items-center rounded">
         <Button variant="secondary" class="absolute z-10 top-4 left-4" on:click={navigateBackToScanner}>
             <ArrowLeftIcon class="size-5 mr-2"/>
             Back
@@ -39,6 +42,10 @@
                      alt="scanned doc"/>
             {/if}
         </div>
-
     </div>
+    {#if preview !== undefined}
+        <div class="shrink-0 flex justify-center items-center">
+            <Button on:click={() => dispatch('extract')}>Extract Text</Button>
+        </div>
+    {/if}
 </div>

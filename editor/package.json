@@ -33,7 +33,7 @@
     "@neodrag/svelte": "^2.0.3",
     "@sveltejs/adapter-node": "^4.0.1",
     "@tailwindcss/container-queries": "^0.1.1",
-    "bits-ui": "^0.19.6",
+    "bits-ui": "^0.19.7",
     "carta-md": "^3.5.0",
     "clsx": "^2.1.0",
     "firebase": "^10.8.1",

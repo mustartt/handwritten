@@ -46,11 +46,9 @@ export const rescalePreviewImage = onObjectFinalized({}, async (event) => {
     const isWidthLonger = (imageMetadata.width || 1024) > (imageMetadata.height || 1024);
     const resizeOptions = isWidthLonger
         ? {
-            withoutEnlargement: true,
             width: 2048
         }
         : {
-            withoutEnlargement: true,
             height: 2048
         };
     const previewBuffer = await sharp(imageBuffer)
@@ -209,3 +207,10 @@ export const scanItem = onCall({
             scanBorder: convertToScanBorder(scanResult.scan_border)
         };
     });
+
+import {extractText} from "./ocr";
+
+export {
+    extractText
+};
+
