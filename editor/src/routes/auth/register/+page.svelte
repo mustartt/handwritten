@@ -10,6 +10,7 @@
     import {auth} from "$lib/firebase.client";
     import {Loader2Icon} from "lucide-svelte";
     import {toast} from "svelte-sonner";
+    import {goto} from "$app/navigation";
 
     const steps = [zod(registerStepSchema1), zod(registerStepSchema2)];
     let step = 1;
@@ -33,7 +34,7 @@
         SPA: true,
         validationMethod: 'auto',
         async onSubmit(event) {
-            console.log('onsubmit', event)
+            console.log('onsubmit', event);
             if (step == steps.length) {
                 isLoading = true;
                 return;
@@ -51,7 +52,7 @@
                     await registerNewUser(data.email, data.password);
                 } catch (err) {
                     console.warn(err);
-                    const errorMessage = err.message || 'An unexpected error has occurred';
+                    const errorMessage = (err as any).message || 'An unexpected error has occurred';
                     form.valid = false;
                     form.message = {type: 'error', text: errorMessage};
                 }
@@ -63,6 +64,7 @@
             if (form.valid) {
                 await sendVerification();
                 toast.info('Verification Email Sent');
+                goto('/auth/login');
             }
         },
         async onResult({result}) {

@@ -6,6 +6,7 @@
     import {GoogleAuthProvider, signInAnonymously, signInWithPopup} from "firebase/auth";
     import {auth} from "$lib/firebase.client";
     import {toast} from "svelte-sonner";
+    import {goto} from "$app/navigation";
 
     const bgImage = 'https://images.unsplash.com/photo-1620275765334-4ed948bb4502?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -21,6 +22,7 @@
                     isLoading = true;
                     await signInWithPopup(auth, googleAuthProvider);
                     isLoading = false;
+                    await goto('/');
                 } catch (err) {
                     toast.error('Failed to login');
                     console.error(err);
@@ -35,6 +37,7 @@
                     isLoading = true;
                     await signInAnonymously(auth);
                     isLoading = false;
+                    await goto('/');
                 } catch (err) {
                     toast.error('Failed to login');
                     console.error(err);
