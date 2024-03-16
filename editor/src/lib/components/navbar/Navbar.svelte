@@ -13,14 +13,9 @@
             path: "/products",
         },
         {
-            text: "Solutions",
-            variant: "ghost" as const,
-            path: "/solutions",
-        },
-        {
             text: "Pricing",
             variant: "ghost" as const,
-            path: "/pricing",
+            path: "/plans",
         },
         {
             text: "Blog",
