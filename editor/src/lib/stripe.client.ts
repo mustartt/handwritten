@@ -1,5 +1,6 @@
-import {firestore, getCurrentUser} from "$lib/firebase.client";
+import {firestore, functions, getCurrentUser} from "$lib/firebase.client";
 import {addDoc, collection, onSnapshot, query, where, getDocs, type Unsubscribe} from "firebase/firestore";
+import {httpsCallable} from "firebase/functions";
 
 export async function createCheckoutSession(priceId: string, successUrl?: string, cancelUrl?: string): Promise<string> {
     let checkoutSessionData = {
@@ -48,9 +49,16 @@ export async function getActiveSubscriptions() {
     }
     const q = query(
         collection(firestore, 'customers', user.uid, 'subscriptions'),
-        where('status', 'in', ['trialing', 'active'])
     );
 
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => doc.data());
+}
+
+export async function createPortalLink(returnUrl?: string) {
+    const createPortalLink = httpsCallable(functions, 'ext-firestore-stripe-payments-createPortalLink');
+    const result = await createPortalLink({
+        returnUrl: returnUrl || window.location.href
+    });
+    return (result.data as any).url;
 }
