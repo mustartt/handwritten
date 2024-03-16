@@ -1,7 +1,7 @@
+<script>
+    import SettingsForm from './(components)/SettingsForm.svelte';
+</script>
+
 <h2 class="font-semibold text-xl">Settings</h2>
 
-
-<div class="w-full mb-4 h-64 bg-card"></div>
-<div class="w-full mb-4 h-64 bg-card"></div>
-<div class="w-full mb-4 h-64 bg-card"></div>
-<div class="w-full mb-4 h-64 bg-card"></div>
+<SettingsForm/>

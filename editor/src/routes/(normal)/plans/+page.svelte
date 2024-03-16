@@ -1,15 +1,8 @@
 <script lang="ts">
     import {Button} from "$lib/components/ui/button/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import {UserIcon} from "lucide-svelte";
-    import {onMount} from "svelte";
-    import {collection, onSnapshot, addDoc} from "firebase/firestore";
     import {auth, firestore, getCurrentUser} from "$lib/firebase.client";
-    import {createCheckoutSession, getActiveSubscriptions} from "$lib/stripe.client";
+    import SubscriptionCard, {type SubscriptionPlan} from "./(components)/SubscriptionCard.svelte";
 
-    onMount(async () => {
-
-    });
 
     async function test() {
         // const url = await createCheckoutSession('price_1Ouldt07NC6H9Ex49FutrwDP');
@@ -20,6 +13,52 @@
 
         console.log(await auth.currentUser?.getIdToken());
     }
+
+    const plans: SubscriptionPlan[] = [
+        {
+            type: 'personal',
+            name: 'Free',
+            available: false,
+            priceId: '',
+            price: 'CA$0 / month',
+            features: [
+                'Forever free',
+                '3 projects',
+                '25 project files / project',
+                '25 document scans / month',
+                '15 basic OCR operations / month'
+            ]
+        },
+        {
+            type: 'personal',
+            name: 'Basic',
+            available: true,
+            priceId: 'price_1OuldP07NC6H9Ex4v7hwD4G7',
+            price: 'CA$10 / month',
+            features: [
+                '10 projects',
+                '100 project files / project',
+                '200 document scans / month',
+                '100 advanced OCR operations / month',
+                'access to advanced features'
+            ]
+        },
+        {
+            type: 'personal',
+            name: 'Premium',
+            available: true,
+            priceId: 'price_1Ouldt07NC6H9Ex49FutrwDP',
+            price: 'CA$25 / month',
+            features: [
+                '100 projects',
+                'unlimited project files / project',
+                'unlimited document scans / month',
+                '1000 advanced OCR operations / month',
+                'access to advanced features',
+                'advanced AI Tooling'
+            ]
+        }
+    ];
 
 </script>
 
@@ -45,90 +84,11 @@
     </div>
     <div class="w-full flex justify-center">
         <div class="max-w-6xl flex flex-col w-full items-center md:items-start p-4 space-y-4 md:space-y-0 md:grid md:gap-4 custom-grid-auto">
-            <div class="flex w-full justify-center">
-                <Card.Root class="w-full max-w-[350px]">
-                    <Card.Header>
-                        <Card.Title class="flex items-center">
-                            <UserIcon class="size-5 mr-2"/>
-                            Personal
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content class="flex flex-col">
-                        <h1 class="font-bold text-2xl">Free</h1>
-                        <span class="mb-2">CA$0 / month</span>
-
-                        <h3 class="font-semibold text-lg mt-4 mb-2">Features</h3>
-                        <div class="prose prose-invert prose-li:m-0">
-                            <ul>
-                                <li>Forever free</li>
-                                <li>3 projects</li>
-                                <li>25 project files / project</li>
-                                <li>25 document scans / month</li>
-                                <li>15 basic OCR operations / month</li>
-                            </ul>
-                        </div>
-                    </Card.Content>
-                </Card.Root>
-            </div>
-            <div class="flex w-full justify-center">
-                <Card.Root class="w-full max-w-[350px]">
-                    <Card.Header>
-                        <Card.Title class="flex items-center">
-                            <UserIcon class="size-5 mr-2"/>
-                            Personal
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content class="flex flex-col">
-                        <h1 class="font-bold text-2xl">Basic</h1>
-                        <span class="mb-2">CA$10 / month</span>
-
-                        <Button>
-                            Upgrade now!
-                        </Button>
-
-                        <h3 class="font-semibold text-lg mt-4 mb-2">Features</h3>
-                        <div class="prose prose-invert prose-li:m-0">
-                            <ul>
-                                <li>10 projects</li>
-                                <li>100 project files / project</li>
-                                <li>200 document scans / month</li>
-                                <li>100 advanced OCR operations / month</li>
-                                <li>access to advanced features</li>
-                            </ul>
-                        </div>
-                    </Card.Content>
-                </Card.Root>
-            </div>
-            <div class="flex w-full justify-center">
-                <Card.Root class="w-full max-w-[350px]">
-                    <Card.Header>
-                        <Card.Title class="flex items-center">
-                            <UserIcon class="size-5 mr-2"/>
-                            Personal
-                        </Card.Title>
-                    </Card.Header>
-                    <Card.Content class="flex flex-col">
-                        <h1 class="font-bold text-2xl">Premium</h1>
-                        <span class="mb-2">CA$25 / month</span>
-
-                        <Button>
-                            Upgrade now!
-                        </Button>
-
-                        <h3 class="font-semibold text-lg mt-4 mb-2">Features</h3>
-                        <div class="prose prose-invert prose-li:m-0">
-                            <ul>
-                                <li>100 projects</li>
-                                <li>unlimited project files / project</li>
-                                <li>unlimited document scans / month</li>
-                                <li>1000 advanced OCR operations / month</li>
-                                <li>access to advanced features</li>
-                                <li>advanced AI Tooling</li>
-                            </ul>
-                        </div>
-                    </Card.Content>
-                </Card.Root>
-            </div>
+            {#each plans as plan}
+                <div class="flex w-full justify-center">
+                    <SubscriptionCard card={plan}/>
+                </div>
+            {/each}
         </div>
     </div>
 </div>
