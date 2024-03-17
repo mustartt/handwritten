@@ -4,6 +4,8 @@ import {getStorage} from "firebase-admin/storage";
 import {Bucket} from "@google-cloud/storage";
 import * as path from "path";
 import sharp = require("sharp");
+import {UpdateProjectItemStatus} from "../pubsub/updateProjectItemStatus";
+import {publishNotifyProjectItemStatus, pubsub} from "../../lib/pubsub";
 
 async function scaleImage(imageBuffer: Buffer) {
     const object = sharp(imageBuffer);
@@ -36,7 +38,7 @@ async function savePreviewToStorage(bucket: Bucket, filename: string,
         });
 }
 
-export const generateImagePreview = onObjectFinalized({}, async (event) => {
+export const generateImageScan = onObjectFinalized({}, async (event) => {
     const filePath = event.data.name;
     const contentType = event.data.contentType;
     const metadata = event.data.metadata;
@@ -47,12 +49,24 @@ export const generateImagePreview = onObjectFinalized({}, async (event) => {
     if (!contentType || !contentType.startsWith("image/")) {
         return logger.warn("This is not an image.");
     }
+    if (!metadata) {
+        return logger.warn("no metadata", filePath);
+    }
 
-    const filename = path.basename(filePath);
+    const projectItemId = path.basename(filePath);
     const bucket = getStorage().bucket(event.data.bucket);
     const downloadResponse = await bucket.file(filePath).download();
 
     const imageBuffer = downloadResponse[0];
-    const previewBuffer = await scaleImage(imageBuffer)
-    await savePreviewToStorage(bucket, filename, previewBuffer, metadata || {});
+    const previewBuffer = await scaleImage(imageBuffer);
+    await savePreviewToStorage(bucket, projectItemId, previewBuffer, metadata || {});
+
+    const data: UpdateProjectItemStatus = {
+        projectId: metadata['projectId'],
+        projectItemId: projectItemId,
+        userId: metadata['userId'],
+        metadata: {},
+        status: 'preview'
+    };
+    await publishNotifyProjectItemStatus(data);
 });

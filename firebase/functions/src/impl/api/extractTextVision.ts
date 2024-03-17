@@ -2,8 +2,8 @@ import {HttpsError, onCall} from "firebase-functions/v2/https";
 import {z} from "zod";
 import {getStorage} from "firebase-admin/storage";
 import {firestore} from "firebase-admin";
-import {extractTextGemini, formatAsMarkdown} from "lib/gemini";
-import {projectItemSchema} from "$lib/projectItem";
+import {extractTextGemini, formatAsMarkdown} from "../../lib/gemini";
+import {projectItemSchema} from "../../lib/projectItem";
 
 
 export const extractTextSchema = z.object({

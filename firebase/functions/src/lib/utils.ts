@@ -1,4 +1,4 @@
-import {CallableRequest, HttpsError} from "firebase-functions/lib/v2/providers/https";
+import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {z, ZodSchema} from "zod";
 
 export function requireAuth(request: CallableRequest) {
