@@ -7,6 +7,7 @@ export const documentTypeSchema = z.union([
     z.literal('scan_document'),
     z.literal('scan_figure')
 ]);
+type ScanDocumentType = z.infer<typeof documentTypeSchema>;
 
 export const scanRequestSchema = z.object({
     itemId: z.string().uuid(),
@@ -49,7 +50,7 @@ function convertToScanBorder(border: ScanApiImageResponse['scan_border']): ScanB
     };
 }
 
-export async function scan(imageBase64: string, scanBorder: ScanBorder, documentType: string) {
+export async function scan(imageBase64: string, documentType: ScanDocumentType = 'scan_notes', scanBorder?: ScanBorder) {
     const requestBody = {
         id: uuidv4(),
         scan_type: documentType,

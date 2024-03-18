@@ -73,8 +73,8 @@ export const projectSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
     owner: z.string(),
-    timeCreated: z.custom<Timestamp>(),
-    timeUpdated: z.custom<Timestamp>(),
+    timeCreated: z.coerce.date(),
+    timeUpdated: z.coerce.date(),
     coverImage: z.string().optional(),
     items: z.array(projectItemSchema)
 });

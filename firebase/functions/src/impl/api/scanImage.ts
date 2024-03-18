@@ -3,7 +3,7 @@ import {HttpsError, onCall} from "firebase-functions/v2/https";
 import {firestore} from "firebase-admin";
 import {getStorage} from "firebase-admin/storage";
 import {v4 as uuidv4} from 'uuid';
-import {projectItemSchema} from "../../lib/projectItem";
+import {projectFileSchema} from "../../lib/projectFile";
 import {ScanApiImageResponse, scanRequestSchema} from "../../lib/scan-api";
 
 

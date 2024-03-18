@@ -1,32 +1,33 @@
 import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import {UpdateProjectItemStatus} from "../pubsub/updateProjectItemStatus";
-import {publishNotifyProjectItemStatus, pubsub} from "../../lib/pubsub";
-import * as path from "path";
+import {publishNotifyProjectItemStatus} from "../../lib/pubsub";
+import {UploadObjectMetadataSerde} from "../../lib/image-upload";
 
-export const notifyUpload = onObjectFinalized({},
-    async (event) => {
-        const filePath = event.data.name;
-        const contentType = event.data.contentType;
-        const metadata = event.data.metadata;
+export const notifyUpload = onObjectFinalized({
+    bucket: 'hand-written-prod-image',
+    cpu: 1,
+    memory: '256MiB',
+    minInstances: 0
+}, async (event) => {
+    const filePath = event.data.name;
+    const contentType = event.data.contentType;
+    const metadata = event.data.metadata;
 
-        if (!filePath.startsWith("upload")) {
-            return logger.log("not an uploaded file skipping");
-        }
-        if (!contentType || !contentType.startsWith("image")) {
-            return logger.log("not an uploaded image skipping");
-        }
-        if (!metadata) {
-            return logger.warn("no metadata", filePath);
-        }
+    if (!contentType || !contentType.startsWith("image/")) {
+        return logger.warn("This is not an image.");
+    }
+    if (!metadata) {
+        return logger.warn("no metadata", filePath);
+    }
 
-        const projectItemId = path.basename(filePath);
-        const data: UpdateProjectItemStatus = {
-            projectId: metadata['projectId'],
-            projectItemId: projectItemId,
-            userId: metadata['userId'],
-            metadata: {},
-            status: 'uploaded'
-        };
-        await publishNotifyProjectItemStatus(data);
-    });
+    const parsedMetadata = UploadObjectMetadataSerde.deserialize(metadata);
+    const data: UpdateProjectItemStatus = {
+        projectId: parsedMetadata.projectId,
+        projectItemId: parsedMetadata.fileId,
+        userId: parsedMetadata.owner,
+        metadata: parsedMetadata.metadata,
+        status: 'uploaded'
+    };
+    await publishNotifyProjectItemStatus(data);
+});

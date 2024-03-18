@@ -47,7 +47,12 @@ export async function loadProjects() {
         projects.update(value => {
             const newRecords = new Map();
             for (const [_, doc] of result.docs.entries()) {
-                const parsedDoc = projectSchema.parse(doc.data());
+                const data = doc.data();
+                const parsedDoc = projectSchema.parse({
+                    ...data,
+                    timeCreated: data.timeCreated.toDate(),
+                    timeUpdated: data.timeUpdated.toDate(),
+                });
                 newRecords.set(parsedDoc.id, parsedDoc);
             }
             value.projects = newRecords;

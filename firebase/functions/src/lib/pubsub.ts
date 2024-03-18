@@ -1,6 +1,6 @@
 import {PubSub} from "@google-cloud/pubsub";
 import {UpdateProjectItemStatus} from "../impl/pubsub/updateProjectItemStatus";
-import * as logger from "firebase-functions/lib/logger";
+import * as logger from "firebase-functions/logger";
 
 export const pubsub = new PubSub();
 

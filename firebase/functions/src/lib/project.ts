@@ -7,20 +7,20 @@ import {firestore} from "firebase-admin";
 // page: page number
 export const metadataSchema = z.record(z.string());
 
-export const projectItemStatus = z.union([
+export const projectFileStatus = z.union([
     z.literal('uploaded'),
     z.literal('preview'),
     z.literal('scanned'),
 ]);
 
-export const projectItemPreviewSchema = z.object({
+
+export const projectFilePreviewSchema = z.object({
     itemId: z.string().uuid(),
     name: z.string(),
     metadata: metadataSchema,
-    status: projectItemStatus,
+    status: projectFileStatus,
     preview: z.string().optional(),
 });
-export type ProjectItem = z.infer<typeof projectItemPreviewSchema>;
 
 export const projectSchema = z.object({
     id: z.string().uuid(),
@@ -29,10 +29,9 @@ export const projectSchema = z.object({
     timeCreated: z.custom<Timestamp>(),
     timeUpdated: z.custom<Timestamp>(),
     coverImage: z.string().optional(),
-    items: z.array(projectItemPreviewSchema)
+    items: z.array(projectFilePreviewSchema)
 });
 export type Project = z.infer<typeof projectSchema>;
-export type ProjectPreview = Omit<Project, 'items'>;
 
 async function getProjectCount(uid: string) {
     const db = firestore();

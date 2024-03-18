@@ -7,36 +7,27 @@
     import {defaults, superForm} from "sveltekit-superforms";
     import {z} from 'zod';
     import {zod} from "sveltekit-superforms/adapters";
-    import {firestore, getCurrentUser} from "$lib/firebase.client";
-    import {setDoc, collection, doc, Timestamp} from 'firebase/firestore';
+    import {functions} from "$lib/firebase.client";
     import {v4 as uuidv4} from 'uuid';
     import {toast} from "svelte-sonner";
-    import type {Project} from "$lib/schemas/project";
+    import {type Project, projectSchema} from "$lib/schemas/project";
     import {projects} from "$lib/store/project";
+    import {httpsCallable} from "firebase/functions";
 
     let createProjectOpen = false;
     let isCreateProjectLoading = false;
 
     async function createNewProject(name: string) {
-        const user = await getCurrentUser();
-        if (!user) {
-            console.error('missing user');
-            toast.error('Unexpected error')
-            return;
-        }
-        const projectId = uuidv4();
-        const docRef = doc(collection(firestore, 'projects'), projectId);
-        const newProject: Project = {
-            id: projectId,
-            name: name,
-            owner: user.uid,
-            items: [],
-            timeCreated: Timestamp.now(),
-            timeUpdated: Timestamp.now()
-        }
-        await setDoc(docRef, newProject);
+        const createProjectFunc = httpsCallable(functions, 'createProject');
+
+        const result = await createProjectFunc({
+            id: uuidv4(),
+            name
+        });
+        const newProject = projectSchema.parse(result.data);
+
         projects.update(value => {
-            value.projects.set(projectId, newProject);
+            value.projects.set(newProject.id, newProject);
             return value;
         });
     }

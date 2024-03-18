@@ -15,7 +15,7 @@ export const createProject = onCall(
     {cors: true},
     async (request) => {
         const auth = requireAuth(request);
-        const data = parseSchema(request, createProjectRequestSchema);
+        const data = parseSchema(request.data, createProjectRequestSchema);
 
         const {limitConfig, projectUsage} = await getUserUsage(auth.uid);
         if (projectUsage.projectCount >= limitConfig.projectLimit) {
@@ -34,11 +34,13 @@ export const createProject = onCall(
         const db = firestore();
         await db.runTransaction(async (txn) => {
             const projectRef = db.doc(`projects/${data.id}`);
-            const projectDoc = await txn.get(projectRef);
-            if (projectDoc.exists) {
-                throw new HttpsError('already-exists', 'Project already exists');
-            }
             txn.create(projectRef, projectData);
         });
+
+        return {
+            ...projectData,
+            timeCreated: projectData.timeCreated.toDate().toJSON(),
+            timeUpdated: projectData.timeUpdated.toDate().toJSON(),
+        };
     });
 

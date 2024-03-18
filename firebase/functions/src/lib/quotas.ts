@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {undefined, z} from "zod";
 import {firestore} from "firebase-admin";
 import {parseSchema} from "./utils";
 
@@ -33,7 +33,7 @@ export type ProjectUsage = z.infer<typeof projectUsageSchema>;
 
 export const accountUsageSchema = z.object({
     storageBytes: z.number().nonnegative()
-})
+});
 export type AccountUsage = z.infer<typeof accountUsageSchema>;
 
 export const userUsageSchema = z.object({
@@ -70,3 +70,27 @@ export async function getUserUsage(uid: string) {
     const limitDoc = await db.doc(`quotas/${uid}`).get();
     return parseSchema(limitDoc.data(), userUsageSchema);
 }
+
+export async function setUserDefaultUsage(uid: string) {
+    const db = firestore();
+    const limitRef = db.doc(`quotas/${uid}`);
+
+    const defaultUsage: UserUsage = {
+        limitConfig: {
+            accountStorageLimit: 1e+8,
+            documentScanLimit: 10,
+            extractTextAILimit: 10,
+            extractTextOCRLimit: 10,
+            itemPerProjectLimit: 10,
+            projectLimit: 10
+        },
+        projectUsage: {
+            projectCount: 0
+        },
+        accountUsage: {
+            storageBytes: 0
+        }
+    };
+    await limitRef.create(defaultUsage);
+}
+

@@ -4,7 +4,7 @@ import {scanBorderSchema} from "./image";
 import {metadataSchema} from "./project";
 
 
-const itemOutputSchema = z.object({
+const fileOutputSchema = z.object({
     extractedText: z.string()
 });
 
@@ -24,7 +24,7 @@ const scanSchema = z.object({
     })
 });
 
-export const projectItemSchema = z.object({
+export const projectFileSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
     owner: z.string(),
@@ -33,5 +33,5 @@ export const projectItemSchema = z.object({
     metadata: metadataSchema,
     image: imageSchema,
     scan: scanSchema,
-    output: itemOutputSchema,
+    output: fileOutputSchema,
 });

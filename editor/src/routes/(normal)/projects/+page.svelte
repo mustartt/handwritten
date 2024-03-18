@@ -1,8 +1,7 @@
 <script lang="ts">
     import {onMount} from "svelte";
-    import HomeSidebar from "$lib/layout/HomeSidebar.svelte";
-    import NewProjectIcon from "./components/NewProjectIcon.svelte";
-    import DocumentIcon from "./components/DocumentIcon.svelte";
+    import NewProjectIcon from "./(components)/NewProjectIcon.svelte";
+    import DocumentIcon from "./(components)/DocumentIcon.svelte";
     import {loadProjects, projectPreview} from "$lib/store/project";
     import {Loader2Icon} from "lucide-svelte";
 
@@ -14,16 +13,15 @@
 </script>
 
 <svelte:head>
-    <title>Editor</title>
+    <title>Projects</title>
 </svelte:head>
 
-<HomeSidebar/>
 
-<div class="flex-auto flex flex-col p-4">
-    <div class="container flex justify-between">
-        <h2 class="text-2xl font-bold ml-6">Documents</h2>
+<div class="container flex flex-col justify-center mt-6">
+    <div class="flex justify-between">
+        <h2 class="text-3xl font-bold ml-6">Documents</h2>
     </div>
-    <div class="container flex justify-center sm:justify-start flex-wrap mt-2 overflow-y-auto">
+    <div class="flex justify-center sm:justify-start flex-wrap mt-2 overflow-y-auto">
         <NewProjectIcon/>
         {#each $previews as project (project.id)}
             <DocumentIcon preview={project}/>

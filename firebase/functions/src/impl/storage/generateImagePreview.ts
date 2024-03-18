@@ -2,10 +2,13 @@ import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import {getStorage} from "firebase-admin/storage";
 import {Bucket} from "@google-cloud/storage";
-import * as path from "path";
 import sharp = require("sharp");
 import {UpdateProjectItemStatus} from "../pubsub/updateProjectItemStatus";
-import {publishNotifyProjectItemStatus, pubsub} from "../../lib/pubsub";
+import {publishNotifyProjectItemStatus} from "../../lib/pubsub";
+import {
+    UploadObjectMetadata,
+    UploadObjectMetadataSerde,
+} from "../../lib/image-upload";
 
 async function scaleImage(imageBuffer: Buffer) {
     const object = sharp(imageBuffer);
@@ -24,48 +27,51 @@ async function scaleImage(imageBuffer: Buffer) {
         .toBuffer();
 }
 
-type Metadata = { [key: string]: string }
-
-async function savePreviewToStorage(bucket: Bucket, filename: string,
-                                    image: Buffer, metadata: Metadata) {
-    const thumbFilePath = `preview/${filename}`;
-    await bucket.file(thumbFilePath)
+async function savePreviewToStorage(bucket: Bucket,
+                                    id: string,
+                                    image: Buffer,
+                                    metadata: UploadObjectMetadata) {
+    await bucket.file(id)
         .save(image, {
             metadata: {
                 contentType: 'image/jpeg',
-                metadata: metadata
+                metadata: UploadObjectMetadataSerde.serialize(metadata)
             }
         });
 }
 
-export const generateImageScan = onObjectFinalized({}, async (event) => {
+export const generateImagePreview = onObjectFinalized({
+    bucket: 'hand-written-prod-image',
+    cpu: 1,
+    memory: '512MiB',
+    minInstances: 0
+}, async (event) => {
     const filePath = event.data.name;
     const contentType = event.data.contentType;
     const metadata = event.data.metadata;
 
-    if (!filePath.startsWith("upload")) {
-        return logger.log("Not an newly uploaded image.");
-    }
     if (!contentType || !contentType.startsWith("image/")) {
         return logger.warn("This is not an image.");
     }
     if (!metadata) {
-        return logger.warn("no metadata", filePath);
+        return logger.error("no metadata", filePath);
     }
 
-    const projectItemId = path.basename(filePath);
+    const parsedMetadata = UploadObjectMetadataSerde.deserialize(metadata);
+
     const bucket = getStorage().bucket(event.data.bucket);
     const downloadResponse = await bucket.file(filePath).download();
-
     const imageBuffer = downloadResponse[0];
+
     const previewBuffer = await scaleImage(imageBuffer);
-    await savePreviewToStorage(bucket, projectItemId, previewBuffer, metadata || {});
+
+    await savePreviewToStorage(bucket, parsedMetadata.projectId, previewBuffer, parsedMetadata);
 
     const data: UpdateProjectItemStatus = {
-        projectId: metadata['projectId'],
-        projectItemId: projectItemId,
-        userId: metadata['userId'],
-        metadata: {},
+        projectId: parsedMetadata.projectId,
+        projectItemId: parsedMetadata.fileId,
+        userId: parsedMetadata.owner,
+        metadata: parsedMetadata.metadata,
         status: 'preview'
     };
     await publishNotifyProjectItemStatus(data);

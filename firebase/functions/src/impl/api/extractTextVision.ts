@@ -3,7 +3,7 @@ import {z} from "zod";
 import {getStorage} from "firebase-admin/storage";
 import {firestore} from "firebase-admin";
 import {extractTextGemini, formatAsMarkdown} from "../../lib/gemini";
-import {projectItemSchema} from "../../lib/projectItem";
+import {projectFileSchema} from "../../lib/projectFile";
 
 
 export const extractTextSchema = z.object({
@@ -23,7 +23,7 @@ export const extractTextVision = onCall(async (request) => {
         throw new HttpsError('not-found', 'item not found');
     }
 
-    const itemData = projectItemSchema.parse(itemDoc.data());
+    const itemData = projectFileSchema.parse(itemDoc.data());
     if (itemData.owner !== request.auth.uid) {
         throw new HttpsError('permission-denied', 'does not own this item');
     }
