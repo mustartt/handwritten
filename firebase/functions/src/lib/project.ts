@@ -15,7 +15,7 @@ export const projectFileStatus = z.union([
 
 
 export const projectFilePreviewSchema = z.object({
-    itemId: z.string().uuid(),
+    fileId: z.string().uuid(),
     name: z.string(),
     metadata: metadataSchema,
     status: projectFileStatus,

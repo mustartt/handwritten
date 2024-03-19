@@ -6,7 +6,8 @@
     const notebookDefaultCover = 'https://images.unsplash.com/photo-1550895030-823330fc2551?q=80&w=1024&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
     export let preview: ProjectPreview;
 
-    function getTimestampString(date: Date) {
+    function getTimestampString(value: Timestamp) {
+        const date = value.toDate();
         return `${date.toDateString()} at ${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
     }
 </script>

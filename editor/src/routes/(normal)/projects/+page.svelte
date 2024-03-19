@@ -2,14 +2,15 @@
     import {onMount} from "svelte";
     import NewProjectIcon from "./(components)/NewProjectIcon.svelte";
     import DocumentIcon from "./(components)/DocumentIcon.svelte";
-    import {loadProjects, projectPreview} from "$lib/store/project";
-    import {Loader2Icon} from "lucide-svelte";
+    import {projectListView} from "$lib/store/project-list";
+    import {loadProjects} from "$lib/service/project-list";
+    import Loader from "$lib/components/ui/loader/Loader.svelte";
 
     onMount(async () => {
         await loadProjects();
     });
 
-    const {loading, previews} = projectPreview;
+    const {loading, previews} = projectListView;
 </script>
 
 <svelte:head>
@@ -30,8 +31,7 @@
     {#if $loading}
         <div class="flex w-full justify-center items-center">
             <span class="flex h-24 justify-center items-center">
-                <Loader2Icon class="size-5 mr-2 animate-spin"/>
-                Loading...
+                <Loader/>
             </span>
         </div>
     {/if}

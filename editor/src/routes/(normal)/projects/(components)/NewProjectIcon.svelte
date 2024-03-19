@@ -7,30 +7,10 @@
     import {defaults, superForm} from "sveltekit-superforms";
     import {z} from 'zod';
     import {zod} from "sveltekit-superforms/adapters";
-    import {functions} from "$lib/firebase.client";
-    import {v4 as uuidv4} from 'uuid';
-    import {toast} from "svelte-sonner";
-    import {type Project, projectSchema} from "$lib/schemas/project";
-    import {projects} from "$lib/store/project";
-    import {httpsCallable} from "firebase/functions";
+    import {createNewProject} from "$lib/service/project-list";
 
     let createProjectOpen = false;
     let isCreateProjectLoading = false;
-
-    async function createNewProject(name: string) {
-        const createProjectFunc = httpsCallable(functions, 'createProject');
-
-        const result = await createProjectFunc({
-            id: uuidv4(),
-            name
-        });
-        const newProject = projectSchema.parse(result.data);
-
-        projects.update(value => {
-            value.projects.set(newProject.id, newProject);
-            return value;
-        });
-    }
 
     const schema = z.object({
         name: z.string()

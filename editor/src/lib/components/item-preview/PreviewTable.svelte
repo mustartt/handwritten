@@ -2,23 +2,24 @@
     import ItemPreview from "$lib/components/item-preview/ItemPreview.svelte";
     import Sortable from 'sortablejs';
     import {onMount} from "svelte";
-    import {editor, queueSaveProject} from "$lib/store/project";
+    import {project} from "$lib/store/project";
+    // import {editor, queueSaveProject} from "$lib/store/project-list";
 
     let listEl: HTMLElement;
 
     function handleSwap(fromIdx: number, toIdx: number) {
-        if (!$editor.project?.id) return;
-        editor.update(store => {
-            const items = store.project?.items;
-            if (!items) return store;
-
-            const temp = items[fromIdx];
-            items[fromIdx] = items[toIdx];
-            items[toIdx] = temp;
-
-            return store;
-        });
-        queueSaveProject($editor.project?.id);
+        // if (!$editor.project?.id) return;
+        // editor.update(store => {
+        //     const items = store.project?.items;
+        //     if (!items) return store;
+        //
+        //     const temp = items[fromIdx];
+        //     items[fromIdx] = items[toIdx];
+        //     items[toIdx] = temp;
+        //
+        //     return store;
+        // });
+        // queueSaveProject($editor.project?.id);
     }
 
     onMount(() => {
@@ -44,12 +45,13 @@
 
 <div bind:this={listEl}
      class="list-group grid gap-4 custom-grid-auto">
-    {#if $editor.project}
-        {#each $editor.project.items as item, index (item.itemId)}
+    {#if $project.isLoading === false}
+        {#each $project.project.items as item, index (item.fileId)}
             <ItemPreview idx={index + 1}
-                         id={item.itemId}
+                         projectId={$project.project.id}
+                         id={item.fileId}
                          name={item.name}
-                         meta={item.meta || ''}
+                         meta={''}
                          image={item.preview}/>
         {/each}
     {/if}

@@ -1,203 +1,44 @@
-import {type Item, itemSchema, type Project, type ProjectPreview} from "$lib/schemas/project";
-import {derived, get, writable} from "svelte/store";
-import {firestore, getCurrentUser} from "$lib/firebase.client";
-import {toast} from "svelte-sonner";
-import {collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, where} from "firebase/firestore";
-import {projectSchema} from "$lib/schemas/project";
+import type {Project} from "$lib/schemas/project";
+import {writable} from "svelte/store";
 
-export interface ProjectState {
-    isLoading: boolean;
-    projects: Map<string, Project>;
-}
-
-export const projects = writable<ProjectState>(
-    {isLoading: false, projects: new Map()});
-
-export const projectPreview = {
-    loading: derived(projects, ($store) => $store.isLoading),
-    previews: derived(projects, ($store) => {
-        const previews = [];
-        for (const [_, proj] of $store.projects) {
-            const {items, ...preview} = proj;
-            previews.push(preview as ProjectPreview);
-        }
-        return previews;
-    })
+type ProjectState = {
+    isLoading: true,
+} | {
+    isLoading: false;
+    isSaving: boolean;
+    project: Project;
 };
 
-export async function loadProjects() {
-    const user = await getCurrentUser();
-    if (!user) {
-        console.error('missing user');
-        toast.error('Unexpected error');
-        return;
-    }
-
-    projects.update(value => {
-        value.isLoading = true;
-        return value;
+function createProjectState() {
+    const {subscribe, update, set} = writable<ProjectState>({
+        isLoading: true
     });
-    try {
-        const projectQuery = query(
-            collection(firestore, 'projects'),
-            where('owner', '==', user.uid),
-        );
 
-        const result = await getDocs(projectQuery);
-        projects.update(value => {
-            const newRecords = new Map();
-            for (const [_, doc] of result.docs.entries()) {
-                const data = doc.data();
-                const parsedDoc = projectSchema.parse({
-                    ...data,
-                    timeCreated: data.timeCreated.toDate(),
-                    timeUpdated: data.timeUpdated.toDate(),
-                });
-                newRecords.set(parsedDoc.id, parsedDoc);
+    function resolve(project: Project) {
+        update(store => {
+            if (!store.isLoading) {
+                store.project = project;
+            } else {
+                store = {
+                    isLoading: false,
+                    isSaving: false,
+                    project
+                };
             }
-            value.projects = newRecords;
-            return value;
-        });
-    } catch (err) {
-        console.error(err);
-        toast.error('Unexpected error');
-    } finally {
-        projects.update(value => {
-            value.isLoading = false;
-            return value;
-        });
-    }
-}
-
-export interface EditorState {
-    isProjectLoading: boolean;
-    isProjectSaving: boolean;
-    project: Project | null;
-
-    isItemLoading: boolean;
-    isItemSaving: boolean;
-    isScanning: boolean;
-
-    item: Item | null;
-    scannerTab: 'scanner' | 'result';
-    previewGeneration: number;
-}
-
-export const editor = writable<EditorState>({
-    isProjectLoading: true,
-    isProjectSaving: false,
-    project: null,
-
-    isItemLoading: false,
-    isItemSaving: false,
-    isScanning: false,
-
-    item: null,
-    scannerTab: "scanner",
-    previewGeneration: 0,
-});
-
-export const editorSave = derived(editor, store => {
-    return store.isItemSaving || store.isProjectSaving;
-});
-
-export async function subscribeToProjectUpdates(projectId: string, handler: (value: Project) => void) {
-    const user = await getCurrentUser();
-    if (!user) {
-        console.error('missing user');
-        toast.error('Unexpected error');
-        throw new Error('Missing user');
-    }
-
-    return onSnapshot(doc(firestore, 'projects', projectId), (projDoc) => {
-        const data = projectSchema.parse(projDoc.data());
-        handler(data);
-    });
-}
-
-let projectTimeout: NodeJS.Timeout;
-
-export async function queueSaveProject(projectId: string) {
-    editor.update(store => {
-        store.isProjectSaving = true;
-        return store;
-    });
-    clearTimeout(projectTimeout);
-    projectTimeout = setTimeout(async () => {
-        const editorState = get(editor);
-        if (!editorState.project || editorState.project.id !== projectId) {
-            return;
-        }
-
-        console.log('Saving project', projectId);
-        try {
-            const projectRef = doc(firestore, 'projects', projectId);
-            await setDoc(projectRef, editorState.project);
-            console.log('Saved project', projectId);
-        } catch (err) {
-            toast.error('Failed to save project');
-            console.error(err);
-        } finally {
-            editor.update(store => {
-                store.isProjectSaving = false;
-                return store;
-            });
-        }
-    }, 5000);
-}
-
-let itemTimeout: NodeJS.Timeout;
-
-export async function queueSaveItem(itemId: string) {
-    editor.update(store => {
-        store.isItemSaving = true;
-        return store;
-    });
-    clearTimeout(itemTimeout);
-    itemTimeout = setTimeout(async () => {
-        const editorState = get(editor);
-        if (!editorState.item || editorState.item.id !== itemId) {
-            return;
-        }
-
-        console.log('Saving item', itemId);
-        try {
-            const itemRef = doc(firestore, 'items', itemId);
-            await setDoc(itemRef, editorState.item);
-            console.log('Saved item', itemId);
-        } catch (err) {
-            toast.error('Failed to save item');
-            console.error(err);
-        } finally {
-            editor.update(store => {
-                store.isItemSaving = false;
-                return store;
-            });
-        }
-    }, 5000);
-}
-
-export async function loadEditorItem(itemId: string) {
-    editor.update(store => {
-        store.isItemLoading = true;
-        return store;
-    });
-    try {
-        const itemRef = doc(firestore, 'items', itemId);
-        const itemDoc = await getDoc(itemRef);
-        const itemData = itemSchema.parse(itemDoc.data());
-
-        editor.update(store => {
-            store.item = itemData;
-            return store;
-        });
-    } catch (err) {
-        toast.error('Failed to load editor item');
-        console.error(err);
-    } finally {
-        editor.update(store => {
-            store.isItemLoading = false;
             return store;
         });
     }
+
+    function load() {
+        set({isLoading: true});
+    }
+
+    return {
+        subscribe, update, set,
+        resolve, load
+    };
 }
+
+export const project = createProjectState();
+
+

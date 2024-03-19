@@ -3,7 +3,7 @@ import {z} from "zod";
 import {getStorage} from "firebase-admin/storage";
 import {firestore} from "firebase-admin";
 import {extractTextGemini, formatAsMarkdown} from "../../lib/gemini";
-import {projectFileSchema} from "../../lib/projectFile";
+import {projectFileSchema} from "../../lib/project-file";
 
 
 export const extractTextSchema = z.object({

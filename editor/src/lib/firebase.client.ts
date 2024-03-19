@@ -23,6 +23,8 @@ export let auth: Auth;
 export let analytics: Analytics;
 export let firestore: Firestore;
 export let storage: FirebaseStorage;
+export let imageStorage: FirebaseStorage;
+
 export let functions: Functions;
 
 
@@ -36,12 +38,14 @@ export function initializeFirebase() {
         analytics = getAnalytics(app);
         firestore = getFirestore(app);
         storage = getStorage(app);
+        imageStorage = getStorage(app, 'gs://hand-written-prod-image');
         functions = getFunctions(app);
 
         if (firebaseConfig.useEmulator) {
             connectAuthEmulator(auth, "http://127.0.0.1:9099");
             connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
             connectStorageEmulator(storage, "127.0.0.1", 9199);
+            connectStorageEmulator(imageStorage, "127.0.0.1", 9199);
             connectFunctionsEmulator(functions, "127.0.0.1", 5001);
         }
     }

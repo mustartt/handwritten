@@ -3,7 +3,7 @@ import * as logger from "firebase-functions/logger";
 import {getStorage} from "firebase-admin/storage";
 import {Bucket} from "@google-cloud/storage";
 import sharp = require("sharp");
-import {UpdateProjectItemStatus} from "../pubsub/updateProjectItemStatus";
+import {UpdateProjectFileStatus} from "../pubsub/updateProjectFileStatus";
 import {publishNotifyProjectItemStatus} from "../../lib/pubsub";
 import {
     UploadObjectMetadata,
@@ -31,20 +31,23 @@ async function savePreviewToStorage(bucket: Bucket,
                                     id: string,
                                     image: Buffer,
                                     metadata: UploadObjectMetadata) {
-    await bucket.file(id)
-        .save(image, {
-            metadata: {
-                contentType: 'image/jpeg',
-                metadata: UploadObjectMetadataSerde.serialize(metadata)
-            }
-        });
+    const file = bucket.file(id);
+    await file.save(image, {
+        metadata: {
+            contentType: 'image/jpeg',
+            metadata: UploadObjectMetadataSerde.serialize(metadata)
+        }
+    });
+    await file.makePublic();
+    return file.publicUrl();
 }
 
 export const generateImagePreview = onObjectFinalized({
     bucket: 'hand-written-prod-image',
     cpu: 1,
     memory: '512MiB',
-    minInstances: 0
+    minInstances: 0,
+    maxInstances: 3,
 }, async (event) => {
     const filePath = event.data.name;
     const contentType = event.data.contentType;
@@ -65,13 +68,16 @@ export const generateImagePreview = onObjectFinalized({
 
     const previewBuffer = await scaleImage(imageBuffer);
 
-    await savePreviewToStorage(bucket, parsedMetadata.projectId, previewBuffer, parsedMetadata);
+    const targetBucket = getStorage().bucket('hand-written-prod-preview');
+    const url = await savePreviewToStorage(targetBucket, parsedMetadata.fileId, previewBuffer, parsedMetadata);
 
-    const data: UpdateProjectItemStatus = {
+    const data: UpdateProjectFileStatus = {
         projectId: parsedMetadata.projectId,
-        projectItemId: parsedMetadata.fileId,
+        fileId: parsedMetadata.fileId,
         userId: parsedMetadata.owner,
-        metadata: parsedMetadata.metadata,
+        metadata: {
+            preview: url
+        },
         status: 'preview'
     };
     await publishNotifyProjectItemStatus(data);

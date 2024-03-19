@@ -1,17 +1,24 @@
 <script lang="ts">
     import FileUploadDialogue, {type UploadEvent} from "$lib/components/item-preview/FileUploadDialogue.svelte";
     import {page} from "$app/stores";
-    import {createFileUpload} from "$lib/store/upload";
     import {Button} from "$lib/components/ui/button";
     import PreviewTable from "$lib/components/item-preview/PreviewTable.svelte";
     import {UploadCloudIcon} from "lucide-svelte";
     import {Separator} from "$lib/components/ui/separator";
+    import {createFileUpload} from "$lib/service/upload";
+    import {imageStorage} from "$lib/firebase.client";
+    import {toast} from "svelte-sonner";
 
     let fileUploadHandler: () => void;
 
     async function handleFileUploads(event: CustomEvent<UploadEvent>) {
         for (const file of event.detail.files) {
-            await createFileUpload(file, $page.params.id);
+            try {
+                await createFileUpload(imageStorage, file, $page.params.id);
+            } catch (err) {
+                toast.error('Unexpected Error');
+                console.error(err);
+            }
         }
     }
 </script>

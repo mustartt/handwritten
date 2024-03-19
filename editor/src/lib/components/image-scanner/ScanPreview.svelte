@@ -1,7 +1,7 @@
 <script lang="ts">
     import {Button} from "$lib/components/ui/button";
     import {ArrowLeftIcon} from "lucide-svelte";
-    import {editor} from "$lib/store/project";
+    import {editor} from "$lib/store/project-list";
     import {createEventDispatcher} from "svelte";
 
     export let preview: string | undefined;

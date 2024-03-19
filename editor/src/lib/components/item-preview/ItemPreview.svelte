@@ -9,43 +9,44 @@
     import {firestore, storage} from "$lib/firebase.client";
     import {doc, deleteDoc, runTransaction, Timestamp} from "firebase/firestore";
     import {get} from "svelte/store";
-    import {editor} from "$lib/store/project";
+    // import {editor} from "$lib/store/project-list";
     import {projectSchema} from "$lib/schemas/project";
 
     export let idx: number;
     export let id: string;
+    export let projectId: string;
     export let name: string;
     export let meta: string;
-    export let image: string = '/images/example-note-2.jpg';
+    export let image: string = 'https://images.unsplash.com/photo-1710664416954-3f4f088a2f12?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
     let alertOpen = false;
 
     async function deleteItem() {
-        const editorState = get(editor);
-        if (!editorState.project) return;
-
-        const fileRef = ref(storage, `upload/${id}`);
-        const scanRef = ref(storage, `scan/${id}`);
-        const previewRef = ref(storage, `preview/${id}`);
-        const itemDoc = doc(firestore, `items/${id}`);
-        const projId = editorState.project.id;
-
-        await Promise.all([
-            deleteObject(fileRef),
-            deleteObject(scanRef),
-            deleteObject(previewRef),
-            deleteDoc(itemDoc),
-            runTransaction(firestore, async (txn) => {
-                const proj = await txn.get(doc(firestore, `projects/${projId}`));
-                const projData = projectSchema.parse(proj.data());
-
-                const newItems = projData.items.filter(item => item.itemId !== id);
-                txn.update(proj.ref, {
-                    items: newItems,
-                    timeUpdated: Timestamp.now()
-                });
-            })
-        ]);
+        // const editorState = get(editor);
+        // if (!editorState.project) return;
+        //
+        // const fileRef = ref(storage, `upload/${id}`);
+        // const scanRef = ref(storage, `scan/${id}`);
+        // const previewRef = ref(storage, `preview/${id}`);
+        // const itemDoc = doc(firestore, `items/${id}`);
+        // const projId = editorState.project.id;
+        //
+        // await Promise.all([
+        //     deleteObject(fileRef),
+        //     deleteObject(scanRef),
+        //     deleteObject(previewRef),
+        //     deleteDoc(itemDoc),
+        //     runTransaction(firestore, async (txn) => {
+        //         const proj = await txn.get(doc(firestore, `projects/${projId}`));
+        //         const projData = projectSchema.parse(proj.data());
+        //
+        //         const newItems = projData.items.filter(item => item.itemId !== id);
+        //         txn.update(proj.ref, {
+        //             items: newItems,
+        //             timeUpdated: Timestamp.now()
+        //         });
+        //     })
+        // ]);
     }
 </script>
 
@@ -69,7 +70,7 @@
         $page.url.searchParams.get('item') === id ? "border-primary" : ""
     )}
    tabindex="0"
-   href={`?item=${id}`}
+   href={`/project/${projectId}/item/${id}`}
    role="button"
    on:click={() => console.log('navigate to', id)}>
     <span class="absolute flex left-2 top-2 justify-center items-center bg-secondary size-8 rounded-full">

@@ -24,6 +24,7 @@ const scanSchema = z.object({
     })
 });
 
+export type ProjectFile = z.infer<typeof projectFileSchema>;
 export const projectFileSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
@@ -31,7 +32,7 @@ export const projectFileSchema = z.object({
     timeUploaded: z.custom<Timestamp>(),
     parentProject: z.string().uuid(),
     metadata: metadataSchema,
-    image: imageSchema,
-    scan: scanSchema,
-    output: fileOutputSchema,
+    image: imageSchema.optional(),
+    scan: scanSchema.optional(),
+    output: fileOutputSchema.optional(),
 });

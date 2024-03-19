@@ -7,7 +7,7 @@
 
     import '@cartamd/plugin-code/default.css';
     import 'katex/dist/katex.css';
-    import {editor, queueSaveItem} from "$lib/store/project";
+    import {editor, queueSaveItem} from "$lib/store/project-list";
     import {get} from "svelte/store";
     import {onDestroy} from "svelte";
 

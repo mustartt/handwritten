@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {editor, queueSaveItem} from '$lib/store/project.js';
+    import {editor, queueSaveItem} from '$lib/store/project-list.js';
     import ImageCropper from '$lib/components/image-scanner/ImageCropper.svelte';
     import ScanPreview from '$lib/components/image-scanner/ScanPreview.svelte';
     import {httpsCallable} from "firebase/functions";
