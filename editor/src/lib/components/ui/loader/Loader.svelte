@@ -5,7 +5,7 @@
     export let mute: 'mute' | 'nomute' = 'nomute';
 </script>
 
-<div class={cn("flex", mute === 'mute' ? 'text-muted-foreground' : '')}>
+<div class={cn("flex items-center", mute === 'mute' ? 'text-muted-foreground' : '')}>
     <Loader2Icon class="size-5 mr-2 animate-spin"/>
     Loading...
 </div>

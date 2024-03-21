@@ -30,7 +30,7 @@ async function validateProject(projectRef: FirebaseFirestore.DocumentReference<F
 
 async function handleUploadedStatus(db: firestore.Firestore, txn: Transaction, request: UpdateProjectFileStatus) {
     const projectRef = db.doc(`projects/${request.projectId}`);
-    const fileRef = db.doc(`files/${request.fileId}`);
+    const fileRef = db.doc(`projects/${request.projectId}/files/${request.fileId}`);
     const projData = await validateProject(projectRef, request);
 
     const name = request.metadata['filename'] || 'Unnamed File';
@@ -46,7 +46,7 @@ async function handleUploadedStatus(db: firestore.Firestore, txn: Transaction, r
         name: name,
         owner: request.userId,
         parentProject: request.projectId,
-        timeUploaded: Timestamp.now()
+        timeUploaded: Timestamp.now(),
     };
 
     txn.create(fileRef, file);
@@ -57,7 +57,7 @@ async function handleUploadedStatus(db: firestore.Firestore, txn: Transaction, r
 
 async function handlePreviewStatus(db: firestore.Firestore, txn: Transaction, request: UpdateProjectFileStatus) {
     const projectRef = db.doc(`projects/${request.projectId}`);
-    const fileRef = db.doc(`files/${request.fileId}`);
+    const fileRef = db.doc(`projects/${request.projectId}/files/${request.fileId}`);
     const projData = await validateProject(projectRef, request);
 
     const newItems = projData.items.map((item) => {
@@ -81,14 +81,14 @@ async function handlePreviewStatus(db: firestore.Firestore, txn: Transaction, re
 
 async function handleScannedStatus(db: firestore.Firestore, txn: Transaction, request: UpdateProjectFileStatus) {
     const projectRef = db.doc(`projects/${request.projectId}`);
-    const fileRef = db.doc(`files/${request.fileId}`);
+    const fileRef = db.doc(`projects/${request.projectId}/files/${request.fileId}`);
     const projData = await validateProject(projectRef, request);
 
     const newItems = projData.items.map((item) => {
         if (item.fileId === request.fileId) {
             return {
                 ...item,
-                status: 'status'
+                status: 'scanned'
             };
         }
         return item;

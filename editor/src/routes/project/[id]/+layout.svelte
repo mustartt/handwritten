@@ -10,6 +10,7 @@
     import {toast} from "svelte-sonner";
     import {Loader2Icon} from "lucide-svelte";
     import ItemPreviewContent from "$lib/components/item-preview/ItemPreviewContent.svelte";
+    import {Separator} from "$lib/components/ui/separator";
 
     let unsub: Unsubscribe | undefined;
     onMount(async () => {
@@ -36,18 +37,19 @@
     $: isDesktop = (containerWidth || 0) >= 1024;
     $: basePath = $page.url.pathname.split('/');
     $: projectFileActive =
-        basePath.length === 5 &&
+        basePath.length >= 4 &&
         basePath[1] === 'project' &&
         basePath[3] === 'item';
 
 </script>
 
 <EditorHeader name={$project.isLoading ? "Loading..." : $project.project.name}/>
+<Separator/>
 
-<div bind:clientWidth={containerWidth} class="flex-1 flex flex-col w-full bg-red-500/10 overflow-hidden min-h-0">
-    {`Container Width: ${containerWidth}px`}
-    {`Layout Desktop: ${isDesktop}`}
-    {`File Active: ${projectFileActive}`}
+<div bind:clientWidth={containerWidth} class="flex-1 flex flex-col w-full overflow-hidden min-h-0">
+    <!--{`Container Width: ${containerWidth}px`}-->
+    <!--{`Layout Desktop: ${isDesktop}`}-->
+    <!--{`File Active: ${projectFileActive}`}-->
     {#if containerWidth === undefined}
         <div class="w-full h-full flex justify-center items-center">
             <Loader2Icon class="text-primary stroke-[2px] size-8 animate-spin"/>
@@ -61,7 +63,7 @@
             {/if}
         {:else}
             <Resizable.PaneGroup direction="horizontal">
-                <Resizable.Pane minSize={25} defaultSize={35} maxSize={50}>
+                <Resizable.Pane minSize={25} defaultSize={35} maxSize={50} class="pr-1">
                     <ItemPreviewContent/>
                 </Resizable.Pane>
                 <Resizable.Handle withHandle/>

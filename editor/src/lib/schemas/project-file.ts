@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase/firestore";
 import {metadataSchema} from "$lib/schemas/project";
 
 const pointSchema = z.object({
@@ -44,7 +44,7 @@ export const projectFileSchema = z.object({
     timeUploaded: z.custom<Timestamp>(),
     parentProject: z.string().uuid(),
     metadata: metadataSchema,
-    image: imageSchema,
-    scan: scanSchema,
-    output: fileOutputSchema,
+    image: imageSchema.optional(),
+    scan: scanSchema.optional(),
+    output: fileOutputSchema.optional(),
 });

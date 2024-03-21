@@ -24,6 +24,6 @@
 
 <input bind:this={el}
        name="upload" multiple type="file" id="hidden-input"
-       class="w-0 h-0 overflow-hidden"
+       class="absolute -z-50 w-0 h-0 overflow-hidden"
        capture="environment"
        on:change={handleFileChange}/>

@@ -39,12 +39,12 @@
 
 <style>
     .custom-grid-auto {
-        grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
 </style>
 
 <div bind:this={listEl}
-     class="list-group grid gap-4 custom-grid-auto">
+     class="list-group grid gap-4 custom-grid-auto @container">
     {#if $project.isLoading === false}
         {#each $project.project.items as item, index (item.fileId)}
             <ItemPreview idx={index + 1}

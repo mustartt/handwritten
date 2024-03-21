@@ -36,7 +36,7 @@
         </div>
     </div>
     <Separator/>
-    <div class="flex-1 bg-background min-h-0 px-4 pt-4 pb-64 overflow-y-scroll overscroll-contain">
+    <div class="flex-1 bg-background min-h-0 items-center px-4 pt-4 pb-64 overflow-y-auto overscroll-contain">
         <PreviewTable/>
     </div>
 </div>
