@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as Breadcrumb from "$lib/components/ui/breadcrumb";
 
-    import {createEditorState, defaultScanSettings, type EditorState} from "$lib/store/image-editor";
+    import {createEditorState, defaultScanSettings, type EditorState, type EditorStore} from "$lib/store/image-editor";
     import Loader from "$lib/components/ui/loader/Loader.svelte";
     import {onDestroy, onMount, setContext} from "svelte";
     import {page} from "$app/stores";
@@ -12,42 +12,49 @@
 
     let state: EditorState;
 
+    async function loadFile(editor: EditorStore, projId: string, id: string) {
+        try {
+            editor.set({
+                isLoading: true,
+                name: '',
+                id: id, projectId: projId
+            });
+
+            const fileRef = doc(collection(firestore, 'projects'), `${projId}/files/${id}`);
+            const fileDoc = await getDoc(fileRef);
+            const data = projectFileSchema.parse(fileDoc.data());
+
+            editor.set({
+                id: data.id,
+                projectId: data.parentProject,
+                name: data.name,
+                isLoading: false,
+                isScanning: false,
+                isSaving: false,
+                isExtracting: false,
+                scanBorder: data.image?.scanBorder || null,
+                preview: data.image?.imageUrl || '',
+                scan: data.scan?.scanUrl || '',
+                settings: {...defaultScanSettings}
+            });
+        } catch (err) {
+            toast.error('Unexpected Error');
+            console.error(err);
+        }
+    }
+
     const editor = createEditorState($page.params.fileId, $page.params.id, '');
     setContext('editor', editor);
 
     const unsub = editor.subscribe(store => (state = store));
     onDestroy(unsub);
 
-    onMount(async () => {
-        const projId = $page.params.id;
-        const id = $page.params.fileId;
-        try {
-            const fileRef = doc(collection(firestore, 'projects'), `${projId}/files/${id}`);
-            const fileDoc = await getDoc(fileRef);
-            const data = projectFileSchema.parse(fileDoc.data());
+    $: {
+        console.log('changed', $page.params.fileId);
 
-            console.log(data);
-
-            editor.update(store => {
-                return {
-                    id: data.id,
-                    projectId: data.parentProject,
-                    name: data.name,
-                    isLoading: false,
-                    isScanning: false,
-                    isSaving: false,
-                    isExtracting: false,
-                    scanBorder: data.image?.scanBorder || null,
-                    preview: data.image?.imageUrl || '',
-                    scan: data.scan?.scanUrl || '',
-                    settings: {...defaultScanSettings}
-                };
-            });
-        } catch (err) {
-            toast.error('Unexpected Error');
-            console.error(err);
-        }
-    });
+        // load new state
+        loadFile(editor, $page.params.id, $page.params.fileId);
+    }
 
     $: homeHref = `/project/${state.projectId}/item/${state.id}`;
     $: cropHref = `/project/${state.projectId}/item/${state.id}/crop`;

@@ -3,6 +3,7 @@
     import type {EditorState} from "$lib/store/image-editor";
     import {Button} from "$lib/components/ui/button";
     import {goto} from "$app/navigation";
+    import Loader from "$lib/components/ui/loader/Loader.svelte";
 
     let state: EditorState;
 
@@ -17,10 +18,14 @@
             <Button size="lg" on:click={() => goto(`/project/${state.projectId}/item/${state.id}/crop`)}>Edit</Button>
         </div>
         <div class="flex-1 p-6 min-h-0 overflow-hidden">
-            <img class="w-full h-full object-contain" src={state.preview} alt="preview"/>
+            <img class="w-full h-full object-contain" src={state.scan} alt="preview"/>
         </div>
         <div class="shrink-0 h-64 w-full bg-card rounded">
 
+        </div>
+    {:else }
+        <div class="w-full h-full flex justify-between items-center">
+            <Loader/>
         </div>
     {/if}
 </div>
