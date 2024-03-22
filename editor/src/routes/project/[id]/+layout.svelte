@@ -63,7 +63,7 @@
             {/if}
         {:else}
             <Resizable.PaneGroup direction="horizontal">
-                <Resizable.Pane minSize={25} defaultSize={35} maxSize={50} class="pr-1">
+                <Resizable.Pane minSize={20} defaultSize={35} maxSize={50} class="pr-1">
                     <ItemPreviewContent/>
                 </Resizable.Pane>
                 <Resizable.Handle withHandle/>

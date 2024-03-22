@@ -29,13 +29,13 @@
 <div class="w-full h-full p-4 overflow-y-auto">
     <form method="POST" use:enhance class="flex flex-col space-y-2">
         <Form.Fieldset {form} name="outputMode">
-            <Form.Legend class="text-2xl pt-6">Output Filter</Form.Legend>
+            <Form.Legend class="text-2xl">Output Filter</Form.Legend>
             <Form.Description>Select the desired scanner output mode.</Form.Description>
             <Separator/>
             <RadioGroup.Root
                     bind:value={$formData.outputMode}
                     orientation="horizontal"
-                    class="flex space-x-1 overflow-x-auto">
+                    class="flex w-full space-x-1 overflow-x-auto">
                 <Form.Control let:attrs>
                     <Label class="shrink-0 [&:has([data-state=checked])>div]:border-primary">
                         <RadioGroup.Item {...attrs} value="original" class="sr-only"/>
@@ -181,7 +181,6 @@
                 <Form.FieldErrors/>
             </Form.Field>
         </Form.Fieldset>
-
 
         <Form.Fieldset {form} name="denoise">
             <Form.Legend class="text-2xl pt-6">Denoise</Form.Legend>

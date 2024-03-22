@@ -52,6 +52,7 @@ export type EditorState = {
         isExtracting: boolean;
         preview: string | null;
         scan: string | null;
+        text: string | null;
         scanBorder: ScanBorder | null;
         settings: ScanSettings;
     });
@@ -95,6 +96,7 @@ export function createEditorState(id: string, projectId: string, name: string) {
         preview: null,
         scan: null,
         scanBorder: null,
+        text: '',
         settings: {...defaultScanSettings}
     });
 

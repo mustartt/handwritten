@@ -49,11 +49,14 @@
     const unsub = editor.subscribe(store => (state = store));
     onDestroy(unsub);
 
+    $: fileId = $page.params.fileId;
+    $: projId = $page.params.id;
+
     $: {
-        console.log('changed', $page.params.fileId);
+        console.log('changed', fileId);
 
         // load new state
-        loadFile(editor, $page.params.id, $page.params.fileId);
+        loadFile(editor, projId, fileId);
     }
 
     $: homeHref = `/project/${state.projectId}/item/${state.id}`;

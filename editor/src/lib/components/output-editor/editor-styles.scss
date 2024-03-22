@@ -17,11 +17,11 @@
       }
 
       .carta-renderer {
-        @apply max-h-full overflow-y-auto overscroll-contain pl-2 pb-64;
+        @apply bg-secondary max-h-full overflow-y-auto overscroll-contain pl-2 pb-64;
       }
 
       .markdown-body {
-        @apply prose dark:prose-invert prose-li:my-0 prose-h1:mb-2;
+        @apply max-w-[80ch] prose dark:prose-invert prose-li:my-0 prose-h1:mb-2;
       }
     }
 

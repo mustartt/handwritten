@@ -10,13 +10,12 @@
     export let forwardText = 'Forward';
     export let forwardHref: string | undefined = undefined;
     export let forwardIcon: ComponentType = ArrowRightIcon;
-
 </script>
 
-<div class="shrink-0 flex justify-between items-center">
+<div class="shrink-0 relative flex justify-center items-center">
     {#if backHref !== undefined}
-        <Button on:click={() => goto(backHref || '#')} variant="secondary" size="sm">
-            <ArrowLeftIcon class="size-5 mr-2"/>
+        <Button class="absolute left-0" on:click={() => goto(backHref || '#')} variant="secondary" size="sm">
+            <ArrowLeftIcon class="size-4 mr-2"/>
             Back
         </Button>
     {/if}
@@ -24,8 +23,8 @@
         <slot/>
     </h3>
     {#if forwardHref !== undefined}
-        <Button on:click={() => goto(forwardHref || '#')} size="sm">
-            <svelte:component this={forwardIcon} class="size-5 mr-2"/>
+        <Button class="absolute right-0 pr-4" on:click={() => goto(forwardHref || '#')} size="sm">
+            <svelte:component this={forwardIcon} class="size-4 mr-2"/>
             {forwardText}
         </Button>
     {/if}

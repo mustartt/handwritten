@@ -2,7 +2,7 @@
     import {getContext, onDestroy} from "svelte";
     import type {EditorState, EditorStore} from "$lib/store/image-editor";
     import ImageCropper from "$lib/components/image-scanner/ImageCropper.svelte";
-    import {PencilLineIcon, ScanLineIcon} from "lucide-svelte";
+    import {ScanLineIcon} from "lucide-svelte";
     import NavigationHeader from "$lib/components/layout/NavigationHeader.svelte";
     import Loader from "$lib/components/ui/loader/Loader.svelte";
 
@@ -33,7 +33,7 @@
                 Crop
             </NavigationHeader>
         </div>
-        <div class="flex-1 flex flex-col py-2 min-h-0 overflow-hidden">
+        <div class="flex-1 flex pt-2 flex-col min-h-0 overflow-hidden">
             <ImageCropper on:scan={handleScan}
                           on:changed={handleChanged}
                           image={state.preview || ''}
