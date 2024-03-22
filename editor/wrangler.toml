@@ -1,0 +1,10 @@
+name = "handwritten-editor"
+account_id = "2821e95ed816906692bf8f47f8159a48"
+
+main = "./.cloudflare/worker.js"
+site.bucket = "./.cloudflare/public"
+
+build.command = "npm run build"
+
+compatibility_date = "2021-11-12"
+workers_dev = true

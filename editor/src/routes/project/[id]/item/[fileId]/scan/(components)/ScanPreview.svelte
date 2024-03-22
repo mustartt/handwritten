@@ -36,7 +36,7 @@
         {:else}
             <div class="flex-1 min-h-0 overflow-hidden bg-card">
                 <img src={`${preview}${generation !== undefined ? '?generation=' + generation : ''}`}
-                     class="w-full h-full object-contain p-6"
+                     class="w-full h-full object-contain p-8"
                      alt="scanned doc"/>
             </div>
         {/if}
