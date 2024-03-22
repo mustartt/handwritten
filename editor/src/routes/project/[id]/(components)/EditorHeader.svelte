@@ -1,5 +1,5 @@
 <script lang="ts">
-    import logoSVG from '$lib/images/logo.svg';
+    import * as Tooltip from "$lib/components/ui/tooltip";
     import {Button} from "$lib/components/ui/button";
     import {DownloadIcon} from "lucide-svelte";
     import HeaderIcon from "$lib/layout/HeaderIcon.svelte";
@@ -9,7 +9,16 @@
 
 <nav class="flex z-10 w-full justify-between items-center h-16 px-6">
     <div class="flex items-center space-x-2">
-        <img class="size-10 md:hidden" src={logoSVG} alt="logo"/>
+        <Tooltip.Root openDelay={300} closeDelay={500}>
+            <Tooltip.Trigger class="hover:bg-accent p-2 rounded">
+                <a href="/projects">
+                    <img class="size-8" src='/images/project.png' alt="project"/>
+                </a>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+                Projects Home
+            </Tooltip.Content>
+        </Tooltip.Root>
         <div class="flex flex-col">
             <h1 class="text-nowrap font-semibold text-2xl">
                 {name}

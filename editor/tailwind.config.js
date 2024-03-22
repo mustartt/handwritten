@@ -17,6 +17,9 @@ const config = {
                 '2xl': '1400px',
             },
         },
+        fontFamily: {
+            'hand': ['Borel', 'Helvetica', 'sans-serif'],
+        },
         extend: {
             screens: {
                 'xs': '320px',
