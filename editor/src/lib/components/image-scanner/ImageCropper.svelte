@@ -5,7 +5,7 @@
     import {CogIcon, RotateCwIcon, ScanLineIcon} from "lucide-svelte";
     import {Button} from "$lib/components/ui/button";
     import {Separator} from "$lib/components/ui/separator";
-    import type {ScanBorder} from "$lib/schemas/project";
+    import type {ScanBorder} from "$lib/schemas/project-file";
 
     export let image: string;
     export let border: ScanBorder | undefined = undefined;
@@ -19,8 +19,7 @@
     let containerHeight: number;
     let imageEl: HTMLImageElement;
 
-    const paddingSize = 48;
-    const heightOffset = -54;
+    const paddingSize = 2 * 32;
 
     export let position1 = {x: 0, y: 0};
     export let position2 = {x: 0, y: 0};
@@ -75,8 +74,8 @@
             imageContWidth, imageContHeight
         );
 
-        const leftOffset = (imageContWidth - displayWidth) / 2 - 4;
-        const topOffset = (imageContHeight - displayHeight) / 2 - 4;
+        const leftOffset = (imageContWidth - displayWidth) / 2 + 4;
+        const topOffset = (imageContHeight - displayHeight) / 2 + 4;
         const scaleX = imageEl.naturalWidth / displayWidth;
         const scaleY = imageEl.naturalHeight / displayHeight;
 
@@ -95,8 +94,8 @@
             imageContWidth, imageContHeight
         );
 
-        const leftOffset = (imageContWidth - displayWidth) / 2 - 4;
-        const topOffset = (imageContHeight - displayHeight) / 2 - 4;
+        const leftOffset = (imageContWidth - displayWidth) / 2 + 4;
+        const topOffset = (imageContHeight - displayHeight) / 2 + 4;
         const scaleX = imageEl.naturalWidth / displayWidth;
         const scaleY = imageEl.naturalHeight / displayHeight;
 
@@ -202,21 +201,20 @@
             <img src={image}
                  bind:this={imageEl}
                  on:load={onImageLoad}
-                 class="w-full h-full object-contain p-6" alt="note">
+                 class="w-full h-full object-contain p-8" alt="note">
         </div>
     </div>
-    <div class="flex flex-col">
-        <Separator/>
-        <div class="z-10 flex justify-evenly items-center p-2">
-            <Button on:click={() => resetBorder()} variant="secondary" size="icon">
-                <RotateCwIcon class="size-5"/>
-            </Button>
-            <Button on:click={scan}>
-                <ScanLineIcon class="size-5"/>
-            </Button>
-            <Button variant="outline" size="icon">
-                <CogIcon class="size-5"/>
-            </Button>
-        </div>
+</div>
+<div class="flex flex-col">
+    <Separator/>
+    <div class="relative z-10 flex justify-center items-center p-2">
+        <Button class="absolute left-4" on:click={() => resetBorder()} variant="secondary">
+            <RotateCwIcon class="size-5 mr-2"/>
+            Reset
+        </Button>
+        <Button on:click={scan}>
+            <ScanLineIcon class="size-5 mr-2"/>
+            Scan
+        </Button>
     </div>
 </div>

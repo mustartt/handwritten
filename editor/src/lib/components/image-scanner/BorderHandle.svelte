@@ -21,11 +21,7 @@
 
     export let position: Position;
     const padding = 12;
-    const offset = 24;
-
-    onMount(() => {
-        console.log('mounted');
-    });
+    const offset = 28;
 
     $: position = {
         x: clamp(position.x, padding - offset, width - padding - offset),
