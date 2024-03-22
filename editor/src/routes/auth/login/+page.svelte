@@ -11,7 +11,6 @@
     import {auth} from "$lib/firebase.client";
     import {goto} from "$app/navigation";
 
-
     const form = superForm(defaults(zod(loginSchema)), {
         SPA: true,
         validators: zod(loginSchema),

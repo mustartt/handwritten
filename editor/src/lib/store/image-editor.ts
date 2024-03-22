@@ -1,58 +1,41 @@
 import type {ScanBorder} from "$lib/schemas/project-file";
 import {writable} from "svelte/store";
+import {z} from "zod";
 
-type OutputOriginal = {
-    type: 'original'
-}
+export const settingsSchema = z.object({
+    denoise: z.object({
+        strength: z.number(),
+        strengthColor: z.number(),
+        radius: z.number(),
+    }),
+    sharpen: z.object({
+        amount: z.number(),
+        radius: z.number(),
+        threshold: z.number()
+    }),
+    exposure: z.object({
+        brightness: z.number(),
+        contrast: z.number(),
+        saturation: z.number()
+    }),
+    correctSkew: z.boolean().default(true),
+    outputMode: z.union([
+        z.literal('original'),
+        z.literal('adaptive_color'),
+        z.literal('adaptive_color_threshold'),
+        z.literal('adaptive_gray_scale'),
+        z.literal('binary')
+    ]),
+    outputParameters: z.object({
+        dilate: z.number(),
+        blur: z.number(),
+        thresholdOffset: z.number(),
+        size: z.number(),
+        c: z.number(),
+    })
+});
 
-type OutputAdaptiveColor = {
-    type: 'adaptive_color',
-    dilate: number,
-    blur: number,
-}
-
-type OutputAdaptiveColorThreshold = {
-    type: 'adaptive_color_threshold',
-    dilate: number,
-    blur: number,
-    thresholdOffset: number
-}
-
-type OutputAdaptiveGrayScale = {
-    type: 'adaptive_gray_scale',
-    dilate: number,
-    blur: number,
-}
-
-type OutputAdaptiveBinary = {
-    type: 'adaptive_binary',
-    size: number,
-    c: number,
-}
-
-export interface ScanSettings {
-    denoise: {
-        strength: number,
-        strengthColor: number
-        radius: number,
-    },
-    sharpen: {
-        amount: number,
-        radius: number,
-        threshold: number
-    },
-    exposure: {
-        brightness: number,
-        contrast: number,
-        saturation: number
-    },
-    applyBorder: boolean;
-    outputMode: OutputOriginal
-        | OutputAdaptiveColor
-        | OutputAdaptiveColorThreshold
-        | OutputAdaptiveGrayScale
-        | OutputAdaptiveBinary;
-}
+export type ScanSettings = z.infer<typeof settingsSchema>;
 
 export type EditorState = {
     id: string;
@@ -75,25 +58,28 @@ export type EditorState = {
 
 export const defaultScanSettings: ScanSettings = {
     denoise: {
-        strength: 0,
-        strengthColor: 0,
-        radius: 5,
+        strength: 25,
+        strengthColor: 15,
+        radius: 7,
     },
     sharpen: {
-        amount: 1,
-        radius: 5,
-        threshold: 10
+        amount: 30,
+        radius: 7,
+        threshold: 30
     },
     exposure: {
-        brightness: 0,
-        contrast: 0,
-        saturation: 0
+        brightness: 100,
+        contrast: 100,
+        saturation: 100
     },
-    applyBorder: true,
-    outputMode: {
-        type: 'adaptive_color',
-        dilate: 7,
-        blur: 21
+    correctSkew: true,
+    outputMode: 'adaptive_color',
+    outputParameters: {
+        size: 21,
+        c: 15,
+        thresholdOffset: 0,
+        blur: 21,
+        dilate: 7
     }
 };
 
